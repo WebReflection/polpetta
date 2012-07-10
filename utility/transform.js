@@ -1,3 +1,5 @@
+// used by make file to parse the Apache file
+// looks crap .... it works ... oh, well!
 var
   fs = require("fs"),
   content = fs.readFileSync("types", "utf-8"),
