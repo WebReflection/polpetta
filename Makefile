@@ -3,7 +3,7 @@
 # list of files
 POLPETTA =  src/intro.js                      \
             src/config.js                     \
-            src/function/*                    \
+            src/function/*.js                 \
             src/EXTENSION_TO_MIME.js          \
             src/var.js                        \
             src/polpetta.js                   \
