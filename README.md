@@ -1,6 +1,6 @@
-polpetta
-========
+(က) Polpetta
+============
 
-Polpetta, any folder is served spiced
+any folder is served spiced
 
 ... coming soon ...
