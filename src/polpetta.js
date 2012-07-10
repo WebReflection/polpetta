@@ -45,21 +45,39 @@ defineImmutableProperties(polpetta, {
    * where if the folder root is not the
    * very first part of the path
    * an empty string is returned instead
+   * @param   String    a generic path to resolve
+   * @returns String    a rsolved path or an empty string
    */
-  resolve: function (src) {
-    src = path.resolve(
-  		path.join(polpetta.root, src)
-  	);
-    return src.indexOf(polpetta.root) ? "" : src;
-  },
-  root: arguments[0] || __dirname,
+  resolve: resolve,
+
+  // the root folder for this server
+  root: (arguments[0] || DIR).indexOf(".") ?
+    arguments[0] || DIR :
+    resolve(arguments[0])
+  ,
+
+  /**
+   * Returns a valid type (mime/type)
+   * ased on official Apache type to extension file
+   * @param   String    a generic etension or type
+   * @returns String    the usable mime or content type
+   * @link  http://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types
+   * @example
+   *    polpetta.type("txt");   // => "text/plain"
+   *    polpetta.type("html");  // => "text/html"
+   *    polpetta.type(".js");   // => "application/javascript"
+   */
   type: function (type) {
     return EXTENSION_TO_MIME[
       type[0] == "." ?
         type :
         "." + type
     ] || "text/html";
-  }
+  },
+
+  // current version
+  version: "0.0.1"
+
 });
 
 keys = Object.keys(polpetta);

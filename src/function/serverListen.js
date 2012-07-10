@@ -11,7 +11,13 @@ serverListen.connect = function () {
     serverListen.connected = true;
     var address = server.address();
     console.log("http://" + address.address + ":" + address.port + "/");
-    console.log("# polpetta " + polpetta.root);
+    console.log([
+      "#",
+      "(က)",
+      "polpetta",
+      "v" + polpetta.version,
+      polpetta.root
+    ].join(" "));
   }
 };
 

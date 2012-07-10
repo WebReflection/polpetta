@@ -2,6 +2,7 @@
 // local variables
 var
   create = Object.create,
+  DIR = __dirname,
   HEADERS = {},
   polpetta = {},
   fs = require("fs"),

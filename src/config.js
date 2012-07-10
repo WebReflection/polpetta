@@ -6,6 +6,7 @@ const
 
   HOST_INITIAL_PORT = 1337,     // choose a port to start with
 
+  // [TODO]
   LIST_FILES_AND_FOLDERS = true // display the list of files
                                 // if no index.njs or index.html is found
 ;
