@@ -79,6 +79,10 @@ All you have to do in your file is to export an `onload` function. This function
       var fs = require("fs");
       fs.writeFileSync("gotcha.txt", "it works");
       response.end();
+      // note that `this` here points
+      // to a polpetta clone enriched
+      // with some utility
+      // and an output object
     };
 
 
@@ -89,7 +93,43 @@ The easy one is about cloning the repository, perform `npm install mymodule` ins
 Since that is gonna be the folder where the application is running in any case, modules are resolved through `require()` via that folder.
 If you want to keep updated the globally executable *polpetta*, you might decide to add this line to the *Makefile* build process: `cp -R build/* /usr/local/bin`
 
-The even easier way is to install your most used modules globally so that these will be available in any case through the node.js `require()` mechanism.
+The even easier way is to install your most used modules globally via `npm install -g module` so that these will be available in any case through the node.js `require()` mechanism and you update one place rather than all of them, if necessary.
+
+
+Polpetta API
+------------
+You can find almost everything documented in the [polpetta.js](https://github.com/WebReflection/polpetta/blob/master/src/polpetta.js) file.
+What you won't find there is a `this.get(key)` method, used to retrieve query string properties as it is for the PHP `$_GET[$key]` global, and a `this.output` **Array** property where you can push your content and `this.output.flush([type || [code, type]])` once you have done.
+Bear in mind this is not a good technique to serve big files on the fly but that's not the purpose of the `output` property.
+
+    // example of get and output
+    this.onload = function (req, res) {
+      var p = this; // polpetta
+      p.output.push(
+        "Hello ",
+          p.get("name",
+            // default if not present
+            "unknown"
+          ),
+        "!"
+      );
+      p.output.flush("txt");
+    };
+
+    // produced output for localhost:port
+    Hello unknown!
+
+    // produced output for localhost:port/?name=Polpetta
+    Hello Polpetta!
+
+
+TODO - Still Missing
+--------------------
+  * **post(key[, default])** to retrieve variables posted via forms, rather than url
+  * **cookie(key[, default])** to retrieve cookies values together with a way to set cookies
+  * **file(key)** to retrieve posted files as buffer
+  * an `Array#forEach` like method for *get, post, cookie, and file* to loop over all set keys
+  * your hints to make this API as simple and awesome as possible ... work in progress, **v0.0.1** indeed
 
 
 License

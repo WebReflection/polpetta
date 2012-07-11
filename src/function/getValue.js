@@ -1,5 +1,6 @@
 
 // simply returns the key if present
-function getValue(key) {
-  return this[key];
+function getValue(key, def) {
+  var value = this[key];
+  return value == null ? def : value;
 }
