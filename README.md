@@ -1,7 +1,6 @@
 (က) Polpetta
 ============
 any folder is served spiced
-___________________________
 
 
 What Is Polpetta
@@ -16,21 +15,103 @@ Oh Gosh ... Why
 I am maintaining different projects and I am sick of setting up a web-server per each project.
 You might have noticed than most recent browsers **do not let us test through the *file://* protocol anymore** and this is the most annoying thing ever for a developer, imho.
 With *polpetta* you can create as many server as you want per each folder and test them without setting up a damn thing.
-Accordingly, if you develop anything for the web that does not necessary requires this or that server side language, *polpetta* coul dbe exactly what you are looking for.
+Accordingly, if you develop anything for the web that does not necessary requires this or that server side language, *polpetta* could be exactly what you are looking for.
 
 
 OK, How Do I Start
 ------------------
 Well, the very first step is to grab *polpetta*, either via `git clone git://github.com/WebReflection/polpetta.git` or simply getting the unique file:
 
+    # go in a directory, if emty is better
+    # grab the built file from this repo
     curl -0 https://raw.github.com/WebReflection/polpetta/master/build/polpetta >polpetta
+
+    # if you don't want to make
+    # polpetta executable
+    # point to polpetta via node
+    node ~/the/path/where/is/polpetta
 
     # if you want make it executable
     # be sure polpetta firstline points to the right
-    # bin folder with node
+    # bin folder with node then chmod it
     chmod +x polpetta
 
     # if that is the case, test if it runs via
     # and exit via Ctrl+C or simply go to
     # the http://address:port/ showed and start playing
     ./polpetta
+
+    # if you want make your life easier and call
+    # polpetta from anywhere, hoping you have not
+    # configured node as super user ( this could hurt )
+    which node
+    # output: /usr/local/bin/node
+
+    # move the file into that bin folder
+    [sudo] mv polpetta /usr/local/bin
+
+    # now, whatever folder you want ..
+    polpetta ~/myhtml/only/website/
+
+    # and you are ready to go
+
+If you want clone this repository, help me improving *polpetta* or do some test/change, remember to `make` in order to build *polpetta* in the build folder then `node build/polpetta ../test` or any other path you like.
+
+
+Make options
+------------
+  * **build**, the default one, creates a freshly new backed *polpetta* in the *build/* folder
+  * **clean**, remove the build folder and everything included
+  * **types**, grab the Apache file, parse it, overwrite the [EXTENSION_TO_MIME.js](https://github.com/WebReflection/polpetta/blob/master/src/EXTENSION_TO_MIME.js) file and build *polpetta* again
+
+
+What About .njs Files
+---------------------
+If the file extension is **.njs** it is **executed PHP style** but with the whole power of node.js.
+You can `require("module")` and do what you want and you receive per each web-server call the **request** and the **response** object.
+All you have to do in your file is to export an `onload` function. This function will be called with a spiced up *polpetta* with some utility but you don't really have to use them, just do what you want.
+
+    // generic.njs file
+    this.onload = function (
+      request,
+      response
+    ) {
+      var fs = require("fs");
+      fs.writeFileSync("gotcha.txt", "it works");
+      response.end();
+    };
+
+
+What About External npm Modules
+-------------------------------
+There are two options here, the easy one and the even easier.
+The easy one is about cloning the repository, perform `npm install mymodule` inside the repository, use *make* and discover that **modules are also included in the *build/* folder**.
+Since that is gonna be the folder where the application is running in any case, modules are resolved through `require()` via that folder.
+If you want to keep updated the globally executable *polpetta*, you might decide to add this line to the *Makefile* build process: `cp -R build/* /usr/local/bin`
+
+The even easier way is to install your most used modules globally so that these will be available in any case through the node.js `require()` mechanism.
+
+
+License
+-------
+This *polpetta* project is under the Mit Style License
+
+    Copyright (C) 2011 by Andrea Giammarchi, @WebReflection
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
