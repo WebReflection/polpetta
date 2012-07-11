@@ -51,10 +51,7 @@ defineImmutableProperties(polpetta, {
   resolve: resolve,
 
   // the root folder for this server
-  root: (arguments[0] || DIR).indexOf(".") ?
-    arguments[0] || DIR :
-    resolve(arguments[0])
-  ,
+  root: path.resolve(DIR, arguments[0] || "./"),
 
   /**
    * Returns a valid type (mime/type)

@@ -1,9 +1,10 @@
 
-// same as polpetta.resolve
+// see polpetta.resolve
 function resolve(src) {
-  var root = polpetta.root || DIR;
   src = path.resolve(
-		path.join(root, src)
+		path.join(polpetta.root, src)
 	);
-  return src.indexOf(root) ? "" : src;
+	// console.log(src);
+	// root must be at index 0
+  return src.indexOf(polpetta.root) ? "" : src;
 }
