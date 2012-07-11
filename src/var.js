@@ -1,9 +1,6 @@
 
 // local variables
 var
-  create = Object.create,
-  DIR = __dirname,
-  HEADERS = {},
   polpetta = {},
   fs = require("fs"),
   http = require("http"),
@@ -18,5 +15,8 @@ var
   server = http.createServer(
     createServer
   ),
+  DIR = __dirname,
+  SEP = path.sep,
+  HEADERS = {},
   keys
 ;
