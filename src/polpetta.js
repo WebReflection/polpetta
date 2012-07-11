@@ -20,6 +20,24 @@ defineImmutableProperties(polpetta, {
   },
 
   /**
+   * Returns the content encoding accordingly
+   * with the file type. Please note this is
+   * just for most common cases and nothing
+   * different from "utf-8" or "binary"
+   * will be returned (so far)
+   * @param   String    the file type
+   * @returns String    "utf-8" or "binary"
+   * @example
+   *    polpetta.encoding("txt"); // => "utf-8"
+   *    polpetta.encoding("pdf"); // => "binary"
+   */
+  encoding: function (ext) {
+    return polpetta.type(ext).indexOf("text/") ?
+      "binary" : "utf-8"
+    ;
+  },
+
+  /**
    * Returns a usable object for
    * response.writeHead(code, header)
    * This is mainly used for generic *non* .njs files
@@ -30,12 +48,17 @@ defineImmutableProperties(polpetta, {
    * @returns Object    an object usable as header
    * @example
    *    polpetta.header("txt");
-   *    // => {"Content-Type":"text/plain"}
+   *    // => {"Content-Type":"text/plain;charset=utf-8"}
    */
   header: function (type) {
+    ~type.indexOf("/") || (
+      type = polpetta.type(type)
+    );
+    type.indexOf("text/") || (
+      type += ";charset=utf-8"
+    );
     return {
-      "Content-Type": ~type.indexOf("/") ?
-        type : polpetta.type(type)
+      "Content-Type": type
     };
   },
 

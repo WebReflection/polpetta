@@ -29,9 +29,7 @@ function fileStats(
           query
         );
       } else {
-        tmp = polpetta.type(ext).indexOf("text/") ?
-          "binary" : "utf-8"
-        ;
+        tmp = polpetta.encoding(ext);
         fs.readFile(
           file,
           tmp,
@@ -61,7 +59,15 @@ function fileStats(
           )
         );
       } else if (LIST_FILES_AND_FOLDERS) {
-        console.log("TODO");
+        fs.readdir(
+          file,
+          readdir.bind(
+            output,
+            polpetta,
+            response,
+            file
+          )
+        );
       } else {
         forbidden(
           output,

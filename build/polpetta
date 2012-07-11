@@ -22,7 +22,7 @@ const
   HOST_INITIAL_PORT = 1337,     // choose a port to start with
 
   // [TODO]
-  LIST_FILES_AND_FOLDERS = false // display the list of files
+  LIST_FILES_AND_FOLDERS = true // display the list of files
                                 // if no index.njs or index.html is found
 ;
 
@@ -119,9 +119,7 @@ function fileStats(
           query
         );
       } else {
-        tmp = polpetta.type(ext).indexOf("text/") ?
-          "binary" : "utf-8"
-        ;
+        tmp = polpetta.encoding(ext);
         fs.readFile(
           file,
           tmp,
@@ -151,7 +149,15 @@ function fileStats(
           )
         );
       } else if (LIST_FILES_AND_FOLDERS) {
-        console.log("TODO");
+        fs.readdir(
+          file,
+          readdir.bind(
+            output,
+            polpetta,
+            response,
+            file
+          )
+        );
       } else {
         forbidden(
           output,
@@ -243,7 +249,8 @@ function generateCommonResponses(code) {
       output,
       polpetta,
       response,
-      code
+      code,
+      "txt"
     );
   };
 }
@@ -323,6 +330,68 @@ function readFile(
     response.end(data, mode);
   }
 }
+// used to show a directory content
+function readdir(
+  polpetta,
+  response,
+  dirName,
+  err,
+  files
+) {
+  var output = this;
+  if (err) {
+    internalServerError(
+      output,
+      polpetta,
+      response
+    );
+  } else {
+    dirName = dirName.replace(polpetta.root, "") + "/";
+    output.push(
+      "<!doctype html>",
+      "<html>",
+        "<head>",
+          "<title>", dirName, "</title>",
+          '<meta name="viewport" content="',
+            'width=device-width,',
+            'initial-scale=1.0,',
+            'maximum-scale=1.0,',
+            'user-scalable=no',
+          '"/>',
+          '<meta name="generator" content="polpetta" />',
+        "</head>",
+        "<body>",
+          "<strong>Files found in " + dirName + "</strong>",
+          "<ul>"
+    );
+    if (dirName != "/") {
+      output.push(
+        '<li><a href="' + dirName + '..">..</a></li>'
+      );
+    }
+    output.dirName = dirName;
+    files.forEach(readdir.forEach, output);
+    output.push(
+          "</ul>",
+        "</body>",
+      "</html>"
+    );
+    response.writeHead(
+      200,
+      polpetta.header("html")
+    );
+    response.end(
+      output.join(""),
+      "utf-8"
+    );
+  }
+}
+
+readdir.forEach = function (name) {
+  this.push(
+    '<li><a href="' + this.dirName + name + '">' + name + '</a></li>'
+  );
+};
 // used to require .njs files
 function requireNJS(
   file,
@@ -1433,6 +1502,24 @@ defineImmutableProperties(polpetta, {
   },
 
   /**
+   * Returns the content encoding accordingly
+   * with the file type. Please note this is
+   * just for most common cases and nothing
+   * different from "utf-8" or "binary"
+   * will be returned (so far)
+   * @param   String    the file type
+   * @returns String    "utf-8" or "binary"
+   * @example
+   *    polpetta.encoding("txt"); // => "utf-8"
+   *    polpetta.encoding("pdf"); // => "binary"
+   */
+  encoding: function (ext) {
+    return polpetta.type(ext).indexOf("text/") ?
+      "binary" : "utf-8"
+    ;
+  },
+
+  /**
    * Returns a usable object for
    * response.writeHead(code, header)
    * This is mainly used for generic *non* .njs files
@@ -1443,12 +1530,17 @@ defineImmutableProperties(polpetta, {
    * @returns Object    an object usable as header
    * @example
    *    polpetta.header("txt");
-   *    // => {"Content-Type":"text/plain"}
+   *    // => {"Content-Type":"text/plain;charset=utf-8"}
    */
   header: function (type) {
+    ~type.indexOf("/") || (
+      type = polpetta.type(type)
+    );
+    type.indexOf("text/") || (
+      type += ";charset=utf-8"
+    );
     return {
-      "Content-Type": ~type.indexOf("/") ?
-        type : polpetta.type(type)
+      "Content-Type": type
     };
   },
 

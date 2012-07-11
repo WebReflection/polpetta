@@ -14,7 +14,8 @@ function generateCommonResponses(code) {
       output,
       polpetta,
       response,
-      code
+      code,
+      "txt"
     );
   };
 }
