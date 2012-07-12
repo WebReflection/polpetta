@@ -161,4 +161,8 @@ This *polpetta* project is under the Mit Style License
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
 
+Logo
+----
+Polpetta means meatball and I am not a graphic designer at all ... so this is all I could do but if you want to create a better logo, you'll be credited and I'll pay you a beer, cheers :D
+
 ![logo](https://github.com/WebReflection/polpetta/raw/master/test/img/polpetta.png)
