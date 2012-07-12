@@ -5,6 +5,8 @@ const
   HOST_NAME = "localhost",      // choose a name for your server
 
   HOST_INITIAL_PORT = 1337,     // choose a port to start with
+                                // this is for automatic port recognition
+                                // if argument [port] is not provided
 
   // [TODO]
   LIST_FILES_AND_FOLDERS = true // display the list of files

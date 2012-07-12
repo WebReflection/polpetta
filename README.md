@@ -21,6 +21,18 @@ With *polpetta* you can create as many server as you want per each folder and te
 Accordingly, if you develop anything for the web that does not necessary requires this or that server side language, *polpetta* could be exactly what you are looking for.
 
 
+Usage
+-----
+Same as [serverdir](https://github.com/remy/servedir)
+
+    polpetta [path] [port]
+
+  * **path**, the folder you want to use as web-server root, by default is where *polpetta* is
+  * **port**, the port you want to use, by default *polpetta* finds a free port automatically
+
+Bear in mind if you specify a port and it's not available, *polpetta* will exit with a notice in console.
+
+
 OK, How Do I Start
 ------------------
 Well, the very first step is to grab *polpetta*, either via `git clone git://github.com/WebReflection/polpetta.git` or simply getting the unique file.

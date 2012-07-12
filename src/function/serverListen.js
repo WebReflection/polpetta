@@ -22,6 +22,18 @@ serverListen.connect = function () {
 };
 
 serverListen.error = function () {
-  ++port;
-  process.nextTick(serverListen);
+  if (HOST_USER_PORT) {
+    console.log([
+      "=======================================================",
+      "Unable to use specified port: ",
+      port,
+      "-------------------------------------------------------",
+      "Try to kill previous process or",
+      "try again without the port to find one available",
+      "======================================================="
+    ].join("\n"));
+  } else {
+    ++port;
+    process.nextTick(serverListen);
+  }
 };

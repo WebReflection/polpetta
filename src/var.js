@@ -11,7 +11,9 @@ var
       this.found = ~value.indexOf("polpetta")
     ;
   }, {}).slice(1),
-  port = HOST_INITIAL_PORT,
+  HOST_USER_PORT = arguments[1],
+  port =  HOST_USER_PORT ||
+          HOST_INITIAL_PORT,
   server = http.createServer(
     createServer
   ),
