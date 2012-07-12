@@ -117,7 +117,7 @@ The easy one is about cloning the repository, perform `npm install mymodule` ins
 Since that is gonna be the folder where the application is running in any case, modules are resolved through `require()` via that folder.
 If you want to keep updated the globally executable *polpetta*, you might decide to add this line to the *Makefile* build process: `cp -R build/* /usr/local/bin`
 
-The even easier way is to install your most used modules globally via `npm install -g module` so that these will be available in any case through the node.js `require()` mechanism and you update one place rather than all of them, if necessary.
+The even easier way is to install your most used modules globally via `npm install module -g` so that these will be available in any case through the node.js `require()` mechanism and you update one place rather than all of them, if necessary.
 
 
 Polpetta API
