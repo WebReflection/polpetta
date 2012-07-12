@@ -42,6 +42,10 @@ Well, the very first step is to grab *polpetta*, either via `git clone git://git
     # the http://address:port/ showed and start playing
     ./polpetta
 
+You should see something like this in your console (I have used the /tmp folder here)
+![polpetta at work](http://www.3site.eu/images/polpetta_shell.png)
+
+
     # if you want make your life easier and call
     # polpetta from anywhere, hoping you have not
     # configured node as super user ( this could hurt )
