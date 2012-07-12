@@ -45,6 +45,7 @@ Well, the very first step is to grab *polpetta*, either via `git clone git://git
     ./polpetta
 
 You should see something like this in your console (I have used the /tmp folder here)
+
 ![polpetta at work](http://www.3site.eu/images/polpetta_shell.png)
 
 
