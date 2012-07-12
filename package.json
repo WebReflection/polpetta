@@ -1,0 +1,19 @@
+{
+  "name": "polpetta",
+  "version": "0.0.1",
+  "description": "Creates a web server in any folder and with runtime node.js modules capability plus get, post data and more",
+  "homepage": "http://github.com/remy/servedir",
+  "main": "./build/polpetta",
+  "keywords": ["development", "web", "server", "terminal"],
+  "author": {
+    "name": "Andrea Giammarchi",
+    "web": "http://webreflection.blogspot.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/WebReflection/polpetta.git"
+  },
+  "bin": {
+    "polpetta": "./bin/polpetta"
+  }
+}
