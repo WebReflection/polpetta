@@ -18,6 +18,8 @@ You might have noticed that most **recent browsers do not let us test through th
 With *polpetta* you can create as many server as you want per each folder and test them without setting up a damn thing.
 Accordingly, if you develop anything for the web that does not necessary requires this or that server side language, *polpetta* could be exactly what you are looking for.
 
+![logo](https://github.com/WebReflection/polpetta/raw/master/test/img/polpetta.png)
+
 
 OK, How Do I Start
 ------------------
