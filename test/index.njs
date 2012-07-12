@@ -28,7 +28,7 @@ this.onload = function (
           '<br/>',
           // and normal paths from the folder
           '<img src="img/polpetta.png"/>',
-        '</cener>',
+        '</center>',
       '</body>',
     '</html>'
   );
