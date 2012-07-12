@@ -32,6 +32,8 @@ Same as [serverdir](https://github.com/remy/servedir)
 
 Bear in mind if you specify a port and it's not available, *polpetta* will exit with a notice in console.
 
+If you don't remember later on ... `polpetta --help` or `polpetta -h` to have some hint.
+
 
 OK, How Do I Start
 ------------------
