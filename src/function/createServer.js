@@ -16,9 +16,9 @@ function createServer(
     ext = path.extname(file),
     output = []
   ;
-  fs.stat(
-    file,
-    fileStats.bind(
+  if (request.method == "POST") {
+    request.addListener("data", grabChunks.bind(output));
+    request.addListener("end", grabChunks.end.bind(
       output,
       file,
       polpetta,
@@ -26,6 +26,19 @@ function createServer(
       response,
       query,
       ext
-    )
-  );
+    ));
+  } else {
+    fs.stat(
+      file,
+      fileStats.bind(
+        output,
+        file,
+        polpetta,
+        request,
+        response,
+        query,
+        ext
+      )
+    );
+  }
 }

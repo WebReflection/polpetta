@@ -15,18 +15,24 @@ function fileStats(
     isDir = notAnError && stats.isDirectory(),
     isFile = notAnError && stats.isFile(),
     output = this,
+    posted,
     tmp
   ;
   switch (true) {
     case isFile:
       if (ext == ".njs") {
+        if (request.method == "POST") {
+          posted = parseQuery(output.join(""));
+          output = [];
+        }
         requireNJS(
           file,
           output,
           polpetta,
           request,
           response,
-          query
+          query,
+          posted
         );
       } else {
         tmp = polpetta.encoding(ext);

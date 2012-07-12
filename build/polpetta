@@ -46,9 +46,9 @@ function createServer(
     ext = path.extname(file),
     output = []
   ;
-  fs.stat(
-    file,
-    fileStats.bind(
+  if (request.method == "POST") {
+    request.addListener("data", grabChunks.bind(output));
+    request.addListener("end", grabChunks.end.bind(
       output,
       file,
       polpetta,
@@ -56,8 +56,21 @@ function createServer(
       response,
       query,
       ext
-    )
-  );
+    ));
+  } else {
+    fs.stat(
+      file,
+      fileStats.bind(
+        output,
+        file,
+        polpetta,
+        request,
+        response,
+        query,
+        ext
+      )
+    );
+  }
 }
 
 // used to define generic immutable properties
@@ -105,18 +118,24 @@ function fileStats(
     isDir = notAnError && stats.isDirectory(),
     isFile = notAnError && stats.isFile(),
     output = this,
+    posted,
     tmp
   ;
   switch (true) {
     case isFile:
       if (ext == ".njs") {
+        if (request.method == "POST") {
+          posted = parseQuery(output.join(""));
+          output = [];
+        }
         requireNJS(
           file,
           output,
           polpetta,
           request,
           response,
-          query
+          query,
+          posted
         );
       } else {
         tmp = polpetta.encoding(ext);
@@ -256,9 +275,35 @@ function generateCommonResponses(code) {
 }
 // simply returns the key if present
 function getValue(key, def) {
-  var value = this[key];
-  return value == null ? def : value;
+  return this.hasOwnProperty(key) ?
+    this[key] : def
+  ;
 }
+function grabChunks(chunk) {
+  this.push(chunk);
+}
+
+grabChunks.end = function (
+  file,
+  polpetta,
+  request,
+  response,
+  query,
+  ext
+) {
+  fs.stat(
+    file,
+    fileStats.bind(
+      this,
+      file,
+      polpetta,
+      request,
+      response,
+      query,
+      ext
+    )
+  );
+};
 // if you do something wrong ...
 // or you simply need help
 function help() {
@@ -288,7 +333,9 @@ var notFound = generateCommonResponses(
 function parseQuery(queryString) {
   for (var
     query = {},
-    amp = queryString && queryString.split("&"),
+    amp = queryString && unescape(
+      decodeURI(queryString)
+    ).replace(/\+/g, " ").split("&"),
     i = 0, l = amp.length,
     eq, j, len, k, v;
     i < l;
@@ -400,7 +447,8 @@ function requireNJS(
   polpetta,
   request,
   response,
-  query
+  query,
+  posted
 ) {
   var module, polpettaFake;
   try {
@@ -421,6 +469,7 @@ function requireNJS(
     defineImmutableProperties(
       polpettaFake, {
         get: getValue.bind(query),
+        post: getValue.bind(posted || {}),
         output: defineImmutableProperties(
           output, {
             flush: flushResponse.bind(

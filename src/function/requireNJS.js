@@ -6,7 +6,8 @@ function requireNJS(
   polpetta,
   request,
   response,
-  query
+  query,
+  posted
 ) {
   var module, polpettaFake;
   try {
@@ -27,6 +28,7 @@ function requireNJS(
     defineImmutableProperties(
       polpettaFake, {
         get: getValue.bind(query),
+        post: getValue.bind(posted || {}),
         output: defineImmutableProperties(
           output, {
             flush: flushResponse.bind(
