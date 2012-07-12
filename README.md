@@ -23,7 +23,9 @@ Accordingly, if you develop anything for the web that does not necessary require
 
 OK, How Do I Start
 ------------------
-Well, the very first step is to grab *polpetta*, either via `git clone git://github.com/WebReflection/polpetta.git` or simply getting the unique file:
+Well, the very first step is to grab *polpetta*, either via `git clone git://github.com/WebReflection/polpetta.git` or simply getting the unique file.
+
+I am trying to solve `npm` problems in order to make this possible as well `npm install polpetta -g`, meanwhile here how you can grab a freshly baked polpetta:
 
     # go in a directory, if emty is better
     # grab the built file from this repo
