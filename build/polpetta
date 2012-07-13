@@ -31,6 +31,22 @@ const
 // after this point, if you don't know what you are doing .. please DON'T !!!
 
 
+function cookieSet(name, value, exp, path, domain, secure) {
+		var c = new Array();
+		c.push(name + '=' + escape(value));
+		var e = (exp > 0);
+		if(e) {
+			var n = new Date();
+			exp = new Date(n.getTime()+(exp*86400000));
+			c.push('expires='+exp.toGMTString());
+		}
+		if(path){c.push('path='+path);}
+		if(domain){c.push('domain='+domain);}
+		if(secure){c.push('secure');}
+		return c.join(';');
+}
+
+
 // entry point for all requestes
 function createServer(
   request,
@@ -241,7 +257,10 @@ function flushResponse(
   }
   response.writeHead(
     code,
-    polpetta.header(type || "text/html")
+    typeof type == "string" ?
+      polpetta.header(
+        type || "text/html"
+      ) : type
   );
   // 304, 404, Not Found ... etc etc ...
   response.end(
@@ -333,6 +352,11 @@ var internalServerError = generateCommonResponses(
 var notFound = generateCommonResponses(
   404
 );
+// parses cookies
+function parseCookie(cookie) {
+  var parts = cookie.split('=');
+  this[unescape(parts[0])] = unescape(parts[1] || '');
+}
 // returns an object with all GET properties
 function parseQuery(queryString) {
   for (var
@@ -454,7 +478,11 @@ function requireNJS(
   query,
   posted
 ) {
-  var module, polpettaFake;
+  var
+    hcookie = request.headers.cookie,
+    cookie,
+    module, polpettaFake
+  ;
   try {
     // not my fault if require is synchronous ...
     module = require(file);
@@ -469,11 +497,14 @@ function requireNJS(
     setPolpettaValue,
     polpettaFake = {}
   );
+  hcookie &&
+  hcookie.split(';').forEach(parseCookie, cookie = {});
   module.onload.call(
     defineImmutableProperties(
       polpettaFake, {
         get: getValue.bind(query),
         post: getValue.bind(posted || {}),
+        cookie: getValue.bind(cookie),
         output: defineImmutableProperties(
           output, {
             flush: flushResponse.bind(

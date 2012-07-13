@@ -27,7 +27,10 @@ function flushResponse(
   }
   response.writeHead(
     code,
-    polpetta.header(type || "text/html")
+    typeof type == "string" ?
+      polpetta.header(
+        type || "text/html"
+      ) : type
   );
   // 304, 404, Not Found ... etc etc ...
   response.end(

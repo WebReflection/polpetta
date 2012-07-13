@@ -9,7 +9,11 @@ function requireNJS(
   query,
   posted
 ) {
-  var module, polpettaFake;
+  var
+    hcookie = request.headers.cookie,
+    cookie,
+    module, polpettaFake
+  ;
   try {
     // not my fault if require is synchronous ...
     module = require(file);
@@ -24,11 +28,14 @@ function requireNJS(
     setPolpettaValue,
     polpettaFake = {}
   );
+  hcookie &&
+  hcookie.split(';').forEach(parseCookie, cookie = {});
   module.onload.call(
     defineImmutableProperties(
       polpettaFake, {
         get: getValue.bind(query),
         post: getValue.bind(posted || {}),
+        cookie: getValue.bind(cookie),
         output: defineImmutableProperties(
           output, {
             flush: flushResponse.bind(
