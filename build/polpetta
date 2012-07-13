@@ -31,22 +31,6 @@ const
 // after this point, if you don't know what you are doing .. please DON'T !!!
 
 
-function cookieSet(name, value, exp, path, domain, secure) {
-		var c = new Array();
-		c.push(name + '=' + escape(value));
-		var e = (exp > 0);
-		if(e) {
-			var n = new Date();
-			exp = new Date(n.getTime()+(exp*86400000));
-			c.push('expires='+exp.toGMTString());
-		}
-		if(path){c.push('path='+path);}
-		if(domain){c.push('domain='+domain);}
-		if(secure){c.push('secure');}
-		return c.join(';');
-}
-
-
 // entry point for all requestes
 function createServer(
   request,
@@ -260,7 +244,7 @@ function flushResponse(
     typeof type == "string" ?
       polpetta.header(
         type || "text/html"
-      ) : type
+      ) : setCookie.flush(type)
   );
   // 304, 404, Not Found ... etc etc ...
   response.end(
@@ -293,6 +277,27 @@ function generateCommonResponses(code) {
       "txt"
     );
   };
+}
+function getCookie(key, def) {
+  return typeof key == "string" ?
+    getValue.call(this, key, def) :
+    key.__cookie__ || (
+      defineImmutableProperties(
+        key, {
+          __cookie__: defineImmutableProperties(
+            [], {
+              set: function () {
+                this.push(
+                  setCookie.apply(null, arguments)
+                );
+                return this;
+              }
+            }
+          )
+        }
+      )
+    ).__cookie__
+  ;
 }
 // simply returns the key if present
 function getValue(key, def) {
@@ -480,7 +485,7 @@ function requireNJS(
 ) {
   var
     hcookie = request.headers.cookie,
-    cookie,
+    cookie = {},
     module, polpettaFake
   ;
   try {
@@ -498,13 +503,13 @@ function requireNJS(
     polpettaFake = {}
   );
   hcookie &&
-  hcookie.split(';').forEach(parseCookie, cookie = {});
+  hcookie.split(';').forEach(parseCookie, cookie);
   module.onload.call(
     defineImmutableProperties(
       polpettaFake, {
         get: getValue.bind(query),
         post: getValue.bind(posted || {}),
-        cookie: getValue.bind(cookie),
+        cookie: getCookie.bind(cookie),
         output: defineImmutableProperties(
           output, {
             flush: flushResponse.bind(
@@ -569,6 +574,29 @@ serverListen.error = function () {
   }
 };
 
+function setCookie(name, value, exp, path, domain, secure) {
+		var c = [];
+		c.push(escape(name) + '=' + escape(value));
+		if(exp > 0) {
+			c.push(
+			  "expires=" + new Date(
+			    new Date + (exp * 86400000)
+			  ).toGMTString()
+			);
+		}
+  	path && c.push("path=" + escape(path));
+  	domain && c.push("domain=" + escape(domain));
+  	secure && c.push("secure");
+		return c.join(';');
+}
+
+setCookie.flush = function (header) {
+  if("__cookie__" in header) {
+    header["Set-Cookie"] =
+    header.__cookie__.join(";");
+  }
+  return header;
+};
 // attach polpetta properties to a generic object
 function setPolpettaValue(key) {
   this[key] = polpetta[key];

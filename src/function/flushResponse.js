@@ -30,7 +30,7 @@ function flushResponse(
     typeof type == "string" ?
       polpetta.header(
         type || "text/html"
-      ) : type
+      ) : setCookie.flush(type)
   );
   // 304, 404, Not Found ... etc etc ...
   response.end(

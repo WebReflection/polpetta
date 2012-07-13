@@ -11,7 +11,7 @@ function requireNJS(
 ) {
   var
     hcookie = request.headers.cookie,
-    cookie,
+    cookie = {},
     module, polpettaFake
   ;
   try {
@@ -29,13 +29,13 @@ function requireNJS(
     polpettaFake = {}
   );
   hcookie &&
-  hcookie.split(';').forEach(parseCookie, cookie = {});
+  hcookie.split(';').forEach(parseCookie, cookie);
   module.onload.call(
     defineImmutableProperties(
       polpettaFake, {
         get: getValue.bind(query),
         post: getValue.bind(posted || {}),
-        cookie: getValue.bind(cookie),
+        cookie: getCookie.bind(cookie),
         output: defineImmutableProperties(
           output, {
             flush: flushResponse.bind(
