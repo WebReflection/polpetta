@@ -12,6 +12,7 @@ function requireNJS(
   var
     hcookie = request.headers.cookie,
     cookie = {},
+    cookies = [],
     module, polpettaFake
   ;
   try {
@@ -29,24 +30,29 @@ function requireNJS(
     polpettaFake = {}
   );
   hcookie &&
-  hcookie.split(';').forEach(parseCookie, cookie);
+  hcookie.split(/(?:,|;) /).forEach(parseCookie, cookie);
+  polpettaFake = defineImmutableProperties(
+    polpettaFake, {
+      get: getValue.bind(query),
+      post: getValue.bind(posted || {}),
+      cookie: cookieManager.bind(cookie),
+      output: defineImmutableProperties(
+        output, {
+          flush: flushResponse.bind(
+            output,
+            polpetta,
+            response,
+            cookies
+          )
+        }
+      )
+    }
+  );
+  polpettaFake.cookie.set = cookieManager.set.bind(
+    cookies
+  );
   module.onload.call(
-    defineImmutableProperties(
-      polpettaFake, {
-        get: getValue.bind(query),
-        post: getValue.bind(posted || {}),
-        cookie: getCookie.bind(cookie),
-        output: defineImmutableProperties(
-          output, {
-            flush: flushResponse.bind(
-              output,
-              polpetta,
-              response
-            )
-          }
-        )
-      }
-    ),
+    polpettaFake,
     request,
     response
   );

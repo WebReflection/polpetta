@@ -5,6 +5,7 @@
 function flushResponse(
   polpetta,
   response,
+  cookies,
   code,
   type,
   encode
@@ -25,13 +26,23 @@ function flushResponse(
   if (!code) {
     code = length ? 200 : 404;
   }
-  response.writeHead(
-    code,
-    typeof type == "string" ?
+  if (typeof type == "string") {
+    response.writeHead(
+      code,
       polpetta.header(
         type || "text/html"
-      ) : setCookie.flush(type)
-  );
+      )
+    );
+  } else {
+    type || (type = {});
+    if (cookies.length) {
+      type["Set-Cookie"] = cookies.join(", ");
+    }
+    response.writeHead(
+      code,
+      type
+    );
+  }
   // 304, 404, Not Found ... etc etc ...
   response.end(
     length ?

@@ -1,12 +1,16 @@
 this.onload = function (
   req, res
 ) {
-  var header = this.header("html");
-  if (this.cookie("test") != null) {
+  var key = "__test__";
+  if (
+    this.cookie(key + "1") != null &&
+    this.cookie(key + "2") != null
+  ) {
     this.output.push(
       "<!doctype html>",
       "<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>",
-      this.cookie("test")
+      this.cookie(key + "1"), "<br />",
+      this.cookie(key + "2")
     );
   } else {
     this.output.push(
@@ -17,11 +21,17 @@ this.onload = function (
 
     // to set a cookie you need a header
     // object
-    this.cookie(header).set(
-      'test', '(က) Polpetta'
+    this.cookie.set(
+      key + "1", "(က) Polpetta 1"
+    );
+    this.cookie.set(
+      key + "2", "(က) Polpetta 2"
     );
   }
 
   // flush passing the header
-  this.output.flush(200, header);
+  this.output.flush(
+    200,
+    this.header("html")
+  );
 };

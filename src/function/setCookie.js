@@ -9,16 +9,8 @@ function setCookie(name, value, exp, path, domain, secure) {
 			  ).toGMTString()
 			);
 		}
-  	path && c.push("path=" + escape(path));
-  	domain && c.push("domain=" + escape(domain));
+  	path && c.push("path=" + path);
+  	domain && c.push("domain=" + domain);
   	secure && c.push("secure");
 		return c.join(';');
 }
-
-setCookie.flush = function (header) {
-  if("__cookie__" in header) {
-    header["Set-Cookie"] =
-    header.__cookie__.join(";");
-  }
-  return header;
-};
