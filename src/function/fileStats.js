@@ -22,7 +22,9 @@ function fileStats(
     case isFile:
       if (ext == ".njs") {
         if (request.method == "POST") {
-          posted = parseQuery(output.join(""));
+          posted = querystring.parse(
+            output.join("")
+          );
           output = [];
         }
         requireNJS(

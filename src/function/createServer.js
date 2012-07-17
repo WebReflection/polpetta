@@ -5,9 +5,9 @@ function createServer(
   response
 ) {
   var
-    url = request.url.split("?"),
-    query = parseQuery(url.slice(1).join("?")),
-    lookingFor = url[0],
+    client = url.parse(request.url, true),
+    query = client.query,
+    lookingFor = client.pathname,
     file = polpetta.resolve(
       lookingFor.slice(-1) == "/" ?
         findHome(lookingFor) :

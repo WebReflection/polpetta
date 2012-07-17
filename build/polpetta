@@ -46,9 +46,9 @@ function createServer(
   response
 ) {
   var
-    url = request.url.split("?"),
-    query = parseQuery(url.slice(1).join("?")),
-    lookingFor = url[0],
+    client = url.parse(request.url, true),
+    query = client.query,
+    lookingFor = client.pathname,
     file = polpetta.resolve(
       lookingFor.slice(-1) == "/" ?
         findHome(lookingFor) :
@@ -136,7 +136,9 @@ function fileStats(
     case isFile:
       if (ext == ".njs") {
         if (request.method == "POST") {
-          posted = parseQuery(output.join(""));
+          posted = querystring.parse(
+            output.join("")
+          );
           output = [];
         }
         requireNJS(
@@ -363,32 +365,6 @@ function parseCookie(cookie) {
   var parts = cookie.split('=');
   this[unescape(parts[0])] = unescape(parts[1] || '');
 }
-// returns an object with all GET properties
-function parseQuery(queryString) {
-  for (var
-    query = {},
-    amp = queryString && unescape(
-      decodeURI(queryString).replace(/\+/g, " ")
-    ).split("&"),
-    i = 0, l = amp.length,
-    eq, j, len, k, v;
-    i < l;
-  ) {
-    eq = amp[i++].split("=");
-    k = eq[0];
-    v = eq.slice(1).join("=");
-    if (query.hasOwnProperty(k)) {
-      if (typeof query[k] == "string") {
-        query[k] = [query[k]];
-      }
-      query[k].push(v);
-    } else {
-      query[k] = v;
-    }
-  }
-  return query;
-}
-
 // once the file has been read ...
 function readFile(
   polpetta,
@@ -1591,6 +1567,8 @@ var
   polpetta = {},
   fs = require("fs"),
   http = require("http"),
+  querystring = require("querystring"),
+  url = require("url"),
   path = require("path"),
   arguments = process.argv.filter(function (value) {
     return this.found ?

@@ -4,6 +4,8 @@ var
   polpetta = {},
   fs = require("fs"),
   http = require("http"),
+  querystring = require("querystring"),
+  url = require("url"),
   path = require("path"),
   arguments = process.argv.filter(function (value) {
     return this.found ?
