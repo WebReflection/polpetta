@@ -3,7 +3,7 @@
 function defineImmutableProperties(object, properties) {
   defineImmutableProperties.properties = properties;
   defineImmutableProperties.object = object;
-  Object.keys(properties).forEach(
+  keys(properties).forEach(
     defineImmutableProperties.forEach,
     defineImmutableProperties
   );

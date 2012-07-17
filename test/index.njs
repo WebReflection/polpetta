@@ -17,6 +17,7 @@ this.onload = function (
     '<html>',
       '<head>',
         '<title>Hello Polpetta!</title>',
+        '<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">',
         // you can use relative paths
         '<link type="text/css" rel="stylesheet" href="./js/../css/hello.css"/>',
         // absolute paths from the folder as root

@@ -88,7 +88,7 @@ function createServer(
 function defineImmutableProperties(object, properties) {
   defineImmutableProperties.properties = properties;
   defineImmutableProperties.object = object;
-  Object.keys(properties).forEach(
+  keys(properties).forEach(
     defineImmutableProperties.forEach,
     defineImmutableProperties
   );
@@ -257,7 +257,9 @@ function flushResponse(
       )
     );
   } else {
-    type || (type = {});
+    type || (type = polpetta.header(
+      "text/html"
+    ));
     if (cookies.length) {
       type["Set-Cookie"] = cookies.join(", ");
     }
@@ -498,16 +500,17 @@ function requireNJS(
       response
     );
   }
-  keys.forEach(
+  polpettaKeys.forEach(
     setPolpettaValue,
     polpettaFake = {}
   );
+  posted || (posted = {});
   hcookie &&
   hcookie.split(/(?:,|;) /).forEach(parseCookie, cookie);
   polpettaFake = defineImmutableProperties(
     polpettaFake, {
       get: getValue.bind(query),
-      post: getValue.bind(posted || {}),
+      post: getValue.bind(posted),
       cookie: cookieManager.bind(cookie),
       output: defineImmutableProperties(
         output, {
@@ -521,9 +524,10 @@ function requireNJS(
       )
     }
   );
-  polpettaFake.cookie.set = cookieManager.set.bind(
-    cookies
-  );
+  polpettaFake.get.keys = keys.bind(null, query);
+  polpettaFake.post.keys = keys.bind(null, posted);
+  polpettaFake.cookie.keys = keys.bind(null, cookie);
+  polpettaFake.cookie.set = cookieManager.set.bind(cookies);
   module.onload.call(
     polpettaFake,
     request,
@@ -1594,7 +1598,11 @@ var
       this.found = ~value.indexOf("polpetta")
     ;
   }, {}).slice(1),
-  HOST_USER_PORT = arguments[1],
+  HOST_USER_PORT = arguments.length == 1 ?
+    (/^\d+$/.test(arguments[0]) ?
+      arguments[0] : arguments[1]) :
+    arguments[1]
+  ,
   port =  HOST_USER_PORT ||
           HOST_INITIAL_PORT,
   server = http.createServer(
@@ -1603,7 +1611,8 @@ var
   DIR = __dirname,
   SEP = path.sep,
   HEADERS = {},
-  keys
+  keys = Object.keys,
+  polpettaKeys
 ;
 
 // the immutable polpetta definition
@@ -1623,7 +1632,7 @@ defineImmutableProperties(polpetta, {
    */
   code: function (code) {
     return  http.STATUS_CODES[code] ||
-            http.STATUS_CODES[404];
+            "Internal Server Error";
   },
 
   /**
@@ -1703,11 +1712,11 @@ defineImmutableProperties(polpetta, {
   },
 
   // current version
-  version: "0.0.1"
+  version: "0.0.2"
 
 });
 
-keys = Object.keys(polpetta);
+polpettaKeys = keys(polpetta);
 
 // need some help ?
 if (/^--?h(?:elp)?$/i.test(arguments[0])) {

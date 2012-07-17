@@ -11,7 +11,11 @@ var
       this.found = ~value.indexOf("polpetta")
     ;
   }, {}).slice(1),
-  HOST_USER_PORT = arguments[1],
+  HOST_USER_PORT = arguments.length == 1 ?
+    (/^\d+$/.test(arguments[0]) ?
+      arguments[0] : arguments[1]) :
+    arguments[1]
+  ,
   port =  HOST_USER_PORT ||
           HOST_INITIAL_PORT,
   server = http.createServer(
@@ -20,5 +24,6 @@ var
   DIR = __dirname,
   SEP = path.sep,
   HEADERS = {},
-  keys
+  keys = Object.keys,
+  polpettaKeys
 ;

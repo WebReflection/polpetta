@@ -34,7 +34,9 @@ function flushResponse(
       )
     );
   } else {
-    type || (type = {});
+    type || (type = polpetta.header(
+      "text/html"
+    ));
     if (cookies.length) {
       type["Set-Cookie"] = cookies.join(", ");
     }

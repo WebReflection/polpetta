@@ -39,7 +39,7 @@ OK, How Do I Start
 ------------------
 Well, the very first step is to grab *polpetta*, either via `git clone git://github.com/WebReflection/polpetta.git` or simply getting the unique file.
 
-I am trying to solve `npm` problems in order to make this possible as well `npm install polpetta -g`, meanwhile here how you can grab a freshly baked polpetta:
+You can install *polpetta* through `npm install polpetta -g` or you can grab directly a freshly baked polpetta:
 
     # go in a directory, if emty is better
     # grab the built file from this repo
@@ -123,7 +123,9 @@ The even easier way is to install your most used modules globally via `npm insta
 Polpetta API
 ------------
 You can find almost everything documented in the [polpetta.js](https://github.com/WebReflection/polpetta/blob/master/src/polpetta.js) file.
-What you won't find there is a `this.get(key[, default])` method, used to retrieve query string properties as it is for the PHP `$_GET[$key]` global, a `this.post(key[, default])` method to retrieve posted data, a `this.cookie(key[, default])` method, to get cookie, followed by `this.cookie.set(key, value)` to set them, and a `this.output` **Array** property where you can push your content and `this.output.flush([type || [code, type]])` once you have done.
+What you won't find there is a `this.get(key[, default])` method, used to retrieve query string properties as it is for the PHP `$_GET[$key]` global, a `this.post(key[, default])` method to retrieve posted data, a `this.cookie(key[, default])` method, to get cookie, followed by `this.cookie.set(key, value)` to set them.
+All these objects have a `obj.keys()` method too to retrieve all parsed keys for *get*, *post*, or *cookie*.
+Last, but not least, there is a `this.output` **Array** property where you can push your content and `this.output.flush([type || [code, type]])` once you have done.
 Bear in mind this is not a good technique to serve big files on the fly but that's not the purpose of the `output` property.
 
     // example of get and output
@@ -150,7 +152,6 @@ Bear in mind this is not a good technique to serve big files on the fly but that
 TODO - Still Missing
 --------------------
   * **file(key)** to retrieve posted files as buffer
-  * an `Array#keys` like method for *get, post, cookie, and file* to loop over all set keys
   * your hints to make this API as simple and awesome as possible ... work in progress, **v0.0.1** indeed
 
 

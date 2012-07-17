@@ -16,7 +16,7 @@ defineImmutableProperties(polpetta, {
    */
   code: function (code) {
     return  http.STATUS_CODES[code] ||
-            http.STATUS_CODES[404];
+            "Internal Server Error";
   },
 
   /**
@@ -96,8 +96,8 @@ defineImmutableProperties(polpetta, {
   },
 
   // current version
-  version: "0.0.1"
+  version: "0.0.2"
 
 });
 
-keys = Object.keys(polpetta);
+polpettaKeys = keys(polpetta);
