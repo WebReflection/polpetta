@@ -5,6 +5,7 @@ function fileStats(
   polpetta,
   request,
   response,
+  client,
   query,
   ext,
   err,
@@ -15,6 +16,7 @@ function fileStats(
     isDir = notAnError && stats.isDirectory(),
     isFile = notAnError && stats.isFile(),
     output = this,
+    files,
     posted,
     tmp
   ;
@@ -22,6 +24,7 @@ function fileStats(
     case isFile:
       if (ext == ".njs") {
         if (request.method == "POST") {
+          files = output.file;
           posted = querystring.parse(
             output.join("")
           );
@@ -33,8 +36,10 @@ function fileStats(
           polpetta,
           request,
           response,
+          client,
           query,
-          posted
+          posted,
+          files
         );
       } else {
         tmp = polpetta.encoding(ext);
@@ -62,6 +67,7 @@ function fileStats(
             polpetta,
             request,
             response,
+            client,
             query,
             path.extname(file)
           )
@@ -69,7 +75,7 @@ function fileStats(
       } else if (LIST_FILES_AND_FOLDERS) {
         fs.readdir(
           file,
-          readdir.bind(
+          readDir.bind(
             output,
             polpetta,
             response,

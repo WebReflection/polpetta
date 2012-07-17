@@ -55,16 +55,24 @@ function createServer(
         lookingFor
     ),
     ext = path.extname(file),
-    output = []
+    output = [],
+    contentType = request.headers["content-type"] || "",
+    boundary
   ;
   if (request.method == "POST") {
+    if (~contentType.indexOf("multipart/form-data;")) {
+      boundary = /boundary=([^;]+)/.exec(contentType)[1];
+      request.setEncoding("binary");
+    }
     request.addListener("data", grabChunks.bind(output));
     request.addListener("end", grabChunks.end.bind(
       output,
+      boundary,
       file,
       polpetta,
       request,
       response,
+      client,
       query,
       ext
     ));
@@ -77,6 +85,7 @@ function createServer(
         polpetta,
         request,
         response,
+        client,
         query,
         ext
       )
@@ -106,7 +115,7 @@ defineImmutableProperties.descriptor = {
 // one function to rule them all
 defineImmutableProperties.forEach = function (key) {
   this.descriptor.value = this.properties[key];
-  Object.defineProperty(
+  defineProperty(
     this.object,
     key,
     this.descriptor
@@ -119,6 +128,7 @@ function fileStats(
   polpetta,
   request,
   response,
+  client,
   query,
   ext,
   err,
@@ -129,6 +139,7 @@ function fileStats(
     isDir = notAnError && stats.isDirectory(),
     isFile = notAnError && stats.isFile(),
     output = this,
+    files,
     posted,
     tmp
   ;
@@ -136,6 +147,7 @@ function fileStats(
     case isFile:
       if (ext == ".njs") {
         if (request.method == "POST") {
+          files = output.file;
           posted = querystring.parse(
             output.join("")
           );
@@ -147,8 +159,10 @@ function fileStats(
           polpetta,
           request,
           response,
+          client,
           query,
-          posted
+          posted,
+          files
         );
       } else {
         tmp = polpetta.encoding(ext);
@@ -176,6 +190,7 @@ function fileStats(
             polpetta,
             request,
             response,
+            client,
             query,
             path.extname(file)
           )
@@ -183,7 +198,7 @@ function fileStats(
       } else if (LIST_FILES_AND_FOLDERS) {
         fs.readdir(
           file,
-          readdir.bind(
+          readDir.bind(
             output,
             polpetta,
             response,
@@ -312,27 +327,122 @@ function grabChunks(chunk) {
   this.push(chunk);
 }
 
+grabChunks.writeFile = function (self, err) {
+  if (err) {
+    this.error = true;
+  } else {
+    this.size = fs.statSync(this.tmp_name).size;
+  }
+  --self.i || self.callback();
+};
+
+grabChunks.forEach = function (data, i) {
+  var
+    line = data.split(grabChunks.splitLines),
+    parse = line[2],
+    content = line.slice(
+      5, line.length - 1
+    ).join(RegExp.$1),
+    name =
+      grabChunks.testName.test(parse) &&
+      RegExp.$2
+    ,
+    filename,
+    file
+  ;
+  if (
+    grabChunks.testFileName.test(parse)
+  ) {
+    if (filename = RegExp.$2) {
+      file = {
+        name: filename,
+        type: polpetta.type(
+          path.extname(filename)
+        ) || "application/octet-stream",
+        error: false,
+        size: 0
+      };
+      if (this.file.hasOwnProperty(name)) {
+        if (this.file[name] instanceof Array) {
+          this.file[name].push(file);
+        } else {
+          this.file[name] = [this.file[name], file];
+        }
+      } else {
+        this.file[name] = file;
+      }
+      this.i++;
+      fs.writeFile(
+        file.tmp_name = path.join(
+          TMP, name + Math.random() + filename
+        ),
+        data,
+        "binary",
+        grabChunks.writeFile.bind(
+          file,
+          this
+        )
+      );
+    }
+  } else if (name) {
+    this.push(RegExp.$2, "=", content);
+  }
+};
+
 grabChunks.end = function (
+  boundary,
   file,
   polpetta,
   request,
   response,
+  client,
   query,
   ext
 ) {
-  fs.stat(
-    file,
-    fileStats.bind(
+  if (boundary) {
+    var output = this.splice(0, this.length);
+    this.file = {};
+    this.i = 0;
+    this.callback = grabChunks.end.bind(
       this,
+      null,
       file,
       polpetta,
       request,
       response,
+      client,
       query,
       ext
-    )
-  );
+    );
+    output.join("").split(boundary).forEach(
+      grabChunks.forEach, this
+    );
+    this.i || this.callback();
+  } else {
+    if ("callback" in this) {
+      delete this.i;
+      delete this.callback;
+    }
+    fs.stat(
+      file,
+      fileStats.bind(
+        this,
+        file,
+        polpetta,
+        request,
+        response,
+        client,
+        query,
+        ext
+      )
+    );
+  }
 };
+
+grabChunks.testFileName = /filename=("|')([^\1]*?)\1/;
+grabChunks.testName = /name=("|')([^\1]*?)\1/;
+grabChunks.splitLines = /(\r\n|\r|\n)/;
+
 // if you do something wrong ...
 // or you simply need help
 function help() {
@@ -365,31 +475,8 @@ function parseCookie(cookie) {
   var parts = cookie.split('=');
   this[unescape(parts[0])] = unescape(parts[1] || '');
 }
-// once the file has been read ...
-function readFile(
-  polpetta,
-  response,
-  ext,
-  mode,
-  err,
-  data
-) {
-  if (err) {
-    internalServerError(
-      this,
-      polpetta,
-      response
-    );
-  } else {
-    response.writeHead(
-      200,
-      polpetta.header(ext)
-    );
-    response.end(data, mode);
-  }
-}
 // used to show a directory content
-function readdir(
+function readDir(
   polpetta,
   response,
   dirName,
@@ -428,7 +515,7 @@ function readdir(
       );
     }
     output.dirName = dirName;
-    files.forEach(readdir.forEach, output);
+    files.forEach(readDir.forEach, output);
     output.push(
           "</ul>",
         "</body>",
@@ -445,11 +532,34 @@ function readdir(
   }
 }
 
-readdir.forEach = function (name) {
+readDir.forEach = function (name) {
   this.push(
     '<li><a href="' + this.dirName + name + '">' + name + '</a></li>'
   );
 };
+// once the file has been read ...
+function readFile(
+  polpetta,
+  response,
+  ext,
+  mode,
+  err,
+  data
+) {
+  if (err) {
+    internalServerError(
+      this,
+      polpetta,
+      response
+    );
+  } else {
+    response.writeHead(
+      200,
+      polpetta.header(ext)
+    );
+    response.end(data, mode);
+  }
+}
 // used to require .njs files
 function requireNJS(
   file,
@@ -457,8 +567,10 @@ function requireNJS(
   polpetta,
   request,
   response,
+  client,
   query,
-  posted
+  posted,
+  files
 ) {
   var
     hcookie = request.headers.cookie,
@@ -481,6 +593,7 @@ function requireNJS(
     polpettaFake = {}
   );
   posted || (posted = {});
+  files || (files = {});
   hcookie &&
   hcookie.split(/(?:,|;) /).forEach(parseCookie, cookie);
   polpettaFake = defineImmutableProperties(
@@ -488,6 +601,8 @@ function requireNJS(
       get: getValue.bind(query),
       post: getValue.bind(posted),
       cookie: cookieManager.bind(cookie),
+      file: getValue.bind(files),
+      url: client,
       output: defineImmutableProperties(
         output, {
           flush: flushResponse.bind(
@@ -502,6 +617,7 @@ function requireNJS(
   );
   polpettaFake.get.keys = keys.bind(null, query);
   polpettaFake.post.keys = keys.bind(null, posted);
+  polpettaFake.file.keys = keys.bind(null, files);
   polpettaFake.cookie.keys = keys.bind(null, cookie);
   polpettaFake.cookie.set = cookieManager.set.bind(cookies);
   module.onload.call(
@@ -1568,8 +1684,10 @@ var
   fs = require("fs"),
   http = require("http"),
   querystring = require("querystring"),
+  stream = require("stream"),
   url = require("url"),
   path = require("path"),
+  env = process.env,
   arguments = process.argv.filter(function (value) {
     return this.found ?
       value :
@@ -1589,7 +1707,9 @@ var
   DIR = __dirname,
   SEP = path.sep,
   HEADERS = {},
+  TMP = env.TMP || env.TMPDIR || env.TEMP || "/tmp" || process.cwd(),
   keys = Object.keys,
+  defineProperty = Object.defineProperty,
   polpettaKeys
 ;
 
@@ -1642,7 +1762,7 @@ defineImmutableProperties(polpetta, {
    * @returns Object    an object usable as header
    * @example
    *    polpetta.header("txt");
-   *    // => {"Content-Type":"text/plain;charset=utf-8"}
+   *    // => {"content-type":"text/plain;charset=utf-8"}
    */
   header: function (type) {
     ~type.indexOf("/") || (
@@ -1652,7 +1772,7 @@ defineImmutableProperties(polpetta, {
       type += ";charset=utf-8"
     );
     return {
-      "Content-Type": type
+      "content-type": type
     };
   },
 
@@ -1674,6 +1794,7 @@ defineImmutableProperties(polpetta, {
    * Returns a valid type (mime/type)
    * ased on official Apache type to extension file
    * @param   String    a generic etension or type
+   * @param   String    optional type, default is "text/html"
    * @returns String    the usable mime or content type
    * @link  http://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types
    * @example
@@ -1681,16 +1802,16 @@ defineImmutableProperties(polpetta, {
    *    polpetta.type("html");  // => "text/html"
    *    polpetta.type(".js");   // => "application/javascript"
    */
-  type: function (type) {
+  type: function (type, def) {
     return EXTENSION_TO_MIME[
       type[0] == "." ?
         type :
         "." + type
-    ] || "text/html";
+    ] || def || "text/html";
   },
 
   // current version
-  version: "0.0.2"
+  version: "0.1.0"
 
 });
 

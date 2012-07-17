@@ -1,6 +1,6 @@
 
 // used to show a directory content
-function readdir(
+function readDir(
   polpetta,
   response,
   dirName,
@@ -39,7 +39,7 @@ function readdir(
       );
     }
     output.dirName = dirName;
-    files.forEach(readdir.forEach, output);
+    files.forEach(readDir.forEach, output);
     output.push(
           "</ul>",
         "</body>",
@@ -56,7 +56,7 @@ function readdir(
   }
 }
 
-readdir.forEach = function (name) {
+readDir.forEach = function (name) {
   this.push(
     '<li><a href="' + this.dirName + name + '">' + name + '</a></li>'
   );

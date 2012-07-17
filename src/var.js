@@ -5,8 +5,10 @@ var
   fs = require("fs"),
   http = require("http"),
   querystring = require("querystring"),
+  stream = require("stream"),
   url = require("url"),
   path = require("path"),
+  env = process.env,
   arguments = process.argv.filter(function (value) {
     return this.found ?
       value :
@@ -26,6 +28,8 @@ var
   DIR = __dirname,
   SEP = path.sep,
   HEADERS = {},
+  TMP = env.TMP || env.TMPDIR || env.TEMP || "/tmp" || process.cwd(),
   keys = Object.keys,
+  defineProperty = Object.defineProperty,
   polpettaKeys
 ;

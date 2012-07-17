@@ -48,7 +48,7 @@ defineImmutableProperties(polpetta, {
    * @returns Object    an object usable as header
    * @example
    *    polpetta.header("txt");
-   *    // => {"Content-Type":"text/plain;charset=utf-8"}
+   *    // => {"content-type":"text/plain;charset=utf-8"}
    */
   header: function (type) {
     ~type.indexOf("/") || (
@@ -58,7 +58,7 @@ defineImmutableProperties(polpetta, {
       type += ";charset=utf-8"
     );
     return {
-      "Content-Type": type
+      "content-type": type
     };
   },
 
@@ -80,6 +80,7 @@ defineImmutableProperties(polpetta, {
    * Returns a valid type (mime/type)
    * ased on official Apache type to extension file
    * @param   String    a generic etension or type
+   * @param   String    optional type, default is "text/html"
    * @returns String    the usable mime or content type
    * @link  http://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types
    * @example
@@ -87,16 +88,16 @@ defineImmutableProperties(polpetta, {
    *    polpetta.type("html");  // => "text/html"
    *    polpetta.type(".js");   // => "application/javascript"
    */
-  type: function (type) {
+  type: function (type, def) {
     return EXTENSION_TO_MIME[
       type[0] == "." ?
         type :
         "." + type
-    ] || "text/html";
+    ] || def || "text/html";
   },
 
   // current version
-  version: "0.0.2"
+  version: "0.1.0"
 
 });
 

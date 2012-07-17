@@ -21,7 +21,7 @@ defineImmutableProperties.descriptor = {
 // one function to rule them all
 defineImmutableProperties.forEach = function (key) {
   this.descriptor.value = this.properties[key];
-  Object.defineProperty(
+  defineProperty(
     this.object,
     key,
     this.descriptor
