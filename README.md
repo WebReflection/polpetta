@@ -11,6 +11,7 @@ What Is Polpetta
 *polpetta* is a script able to initialize a [node.js](http://nodejs.org/) server in any folder you want
 `node polpetta ~/path` is basically all you need to start surfing the `~/path` folder as if it is a web-server with the plus that any *file.njs* inside that folder will act as *node.js* module.
 Here [the most basic example of an *index.njs* file](https://github.com/WebReflection/polpetta/blob/master/test/index.njs).
+
 In few words, **polpetta is the easiest way for quick prototyping with both client files and node.js modules**.
 
 
@@ -18,8 +19,9 @@ Oh Gosh ... Why
 ---------------
 I am maintaining different projects and I am sick of setting up a web-server per each project.
 You might have noticed that most **recent browsers do not let us test through the *file://* protocol anymore** and this is the most annoying thing ever for a developer, imho.
+You might be a *node.js* modules developer too and sometimes an easy way to test your modules is all you need.
 With *polpetta* you can create as many server as you want per each folder and test them without setting up a damn thing.
-Accordingly, if you develop anything for the web that does not necessary requires this or that server side language, *polpetta* could be exactly what you are looking for.
+Accordingly, if you develop anything for the web or the *node.js* community, *polpetta* could be exactly the solution to all your problems.
 
 
 Usage
