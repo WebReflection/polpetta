@@ -129,7 +129,7 @@ You can find almost everything documented in the [polpetta.js](https://github.co
 What you won't find there is a `this.get(key[, default])` method, used to retrieve query string properties as it is for the PHP `$_GET[$key]` global, a `this.post(key[, default])` method to retrieve posted data, a `this.cookie(key[, default])` method, to get cookie, followed by `this.cookie.set(key, value)` to set them.
 All these objects have a `obj.keys()` method too to retrieve all parsed keys for *get*, *post*, or *cookie*.
 
-You can see an examples for [cookie](https://github.com/WebReflection/polpetta/blob/master/test/cookie.njs), [get or post](https://github.com/WebReflection/polpetta/blob/master/test/post.njs), and [files upload](https://github.com/WebReflection/polpetta/blob/master/test/cookie.njs) in the test folder.
+You can see an examples for [cookie](https://github.com/WebReflection/polpetta/blob/master/test/cookie.njs), [get or post](https://github.com/WebReflection/polpetta/blob/master/test/post.njs), and [files upload](https://github.com/WebReflection/polpetta/blob/master/test/file.njs) in the test folder.
 
 Last, but not least, there is a `this.output` **Array** property where you can push your content and `this.output.flush([type || [code, type]])` once you have done.
 Bear in mind this is not a good technique to serve big files on the fly but that's not the purpose of the `output` property.
