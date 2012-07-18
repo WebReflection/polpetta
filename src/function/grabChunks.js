@@ -14,54 +14,67 @@ grabChunks.writeFile = function (self, err) {
 
 grabChunks.forEach = function (data, i) {
   var
-    line = data.split(grabChunks.splitLines),
-    parse = line[2],
-    content = line.slice(
-      5, line.length - 1
-    ).join(RegExp.$1),
-    name =
-      grabChunks.testName.test(parse) &&
-      RegExp.$2
-    ,
+    line = data.split("\r\n"),
+    headers = line.slice(
+      1, line.indexOf("", 1)
+    ),
+    i = 0,
+    name,
     filename,
-    file
+    file,
+    parse,
+    content
   ;
-  if (
-    grabChunks.testFileName.test(parse)
-  ) {
-    if (filename = RegExp.$2) {
-      file = {
-        name: filename,
-        type: polpetta.type(
-          path.extname(filename)
-        ) || "application/octet-stream",
-        error: false,
-        size: 0
-      };
-      if (this.file.hasOwnProperty(name)) {
-        if (this.file[name] instanceof Array) {
-          this.file[name].push(file);
-        } else {
-          this.file[name] = [this.file[name], file];
+  while (i < headers.length) {
+    parse = headers[i++];
+    if (grabChunks.testName.test(parse)) {
+      name = RegExp.$2;
+      content = line.slice(
+        line.indexOf("", i) + 1, line.length - 1
+      ).join("\r\n");
+      if (grabChunks.testFileName.test(parse)) {
+        filename = RegExp.$2;
+        if (filename.length) {
+          file = {
+            name: filename,
+            type: polpetta.type(
+              path.extname(filename),
+              "application/octet-stream"
+            ),
+            error: false,
+            size: 0
+          };
+          if (this.file.hasOwnProperty(name)) {
+            if (this.file[name] instanceof Array) {
+              this.file[name].push(file);
+            } else {
+              this.file[name] = [this.file[name], file];
+            }
+          } else {
+            this.file[name] = file;
+          }
+          this.i++;
+          fs.writeFile(
+            file.tmp_name = path.join(
+              TMP, name + Math.random() + filename
+            ),
+            content,
+            "binary",
+            grabChunks.writeFile.bind(
+              file,
+              this
+            )
+          );
         }
-      } else {
-        this.file[name] = file;
+      } else if (content.length) {
+        this.push(
+          encodeURIComponent(name),
+          "=",
+          encodeURIComponent(content)
+        );
       }
-      this.i++;
-      fs.writeFile(
-        file.tmp_name = path.join(
-          TMP, name + Math.random() + filename
-        ),
-        data,
-        "binary",
-        grabChunks.writeFile.bind(
-          file,
-          this
-        )
-      );
+      break;
     }
-  } else if (name) {
-    this.push(RegExp.$2, "=", content);
   }
 };
 
@@ -117,4 +130,4 @@ grabChunks.end = function (
 
 grabChunks.testFileName = /filename=("|')([^\1]*?)\1/;
 grabChunks.testName = /name=("|')([^\1]*?)\1/;
-grabChunks.splitLines = /(\r\n|\r|\n)/;
+

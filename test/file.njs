@@ -2,6 +2,8 @@ this.onload = function (
   req, res
 ) {
 
+  var fs = require("fs");
+
   [
       "<!doctype html>",
       "<meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>",
@@ -18,7 +20,9 @@ this.onload = function (
         this.file(key)
       ).forEach(function (file) {
         if (!file.error) {
-          console.log("removing: " + file.tmp_name);
+          // if you want to check files
+          // put a return here and check
+          // the tmp folder
           fs.unlinkSync(
             file.tmp_name
           );
