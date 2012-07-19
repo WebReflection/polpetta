@@ -7,7 +7,9 @@ function createServer(
   var
     client = url.parse(request.url, true),
     query = client.query,
-    lookingFor = client.pathname,
+    lookingFor = decodeURIComponent(
+      client.pathname
+    ),
     file = polpetta.resolve(
       lookingFor.slice(-1) == "/" ?
         findHome(lookingFor) :
