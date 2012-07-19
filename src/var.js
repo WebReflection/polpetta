@@ -20,7 +20,7 @@ var
                    /^(\d+)$/.test(arguments[1])) &&
                    RegExp.$1
   ,
-  DIR = __dirname,
+  // DIR = __dirname,
   SEP = path.sep,
   HEADERS = {},
   TMP = env.TMP || env.TMPDIR || env.TEMP || CWD,
