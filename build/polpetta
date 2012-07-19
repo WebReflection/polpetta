@@ -659,14 +659,11 @@ function requireNJS(
 }
 // see polpetta.resolve
 function resolve(src) {
-  src = resolveRelative(polpetta.root, src);
+  src = path.resolve(
+		path.join(polpetta.root, src)
+	);
 	// root must be at index 0
   return src.indexOf(polpetta.root) ? "" : src;
-}
-function resolveRelative(root, relative) {
-  return path.resolve(
-		path.join(root, src)
-	);
 }
 function serveNJS(
   output,
@@ -1870,7 +1867,7 @@ defineImmutableProperties(polpetta, {
   },
 
   // current version
-  version: "0.1.6"
+  version: "0.1.7"
 
 });
 
