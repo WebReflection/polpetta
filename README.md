@@ -15,6 +15,12 @@ Here [the most basic example of an *index.njs* file](https://github.com/WebRefle
 In few words, **polpetta is the easiest way for quick prototyping with both client files and node.js modules**.
 
 
+Platforms
+---------
+*polpetta* should just work wherever a recent version of node.js is available.
+Known platforms are **Linux**, **Mac**, and **Windows** where for latter one the *polpetta.cmd* file will simply start a polpetta server through double click.
+
+
 Oh Gosh ... Why
 ---------------
 I am maintaining different projects and I am sick of setting up a web-server per each project.
