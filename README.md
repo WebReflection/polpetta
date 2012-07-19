@@ -161,6 +161,16 @@ Bear in mind this is not a good technique to serve big files on the fly but that
     Hello Polpetta!
 
 
+TODOs
+-----
+  * add .htaccess like mechanism for the root folder as ..
+    * hidden file from any folder request ( no ajax, images, etc ... )
+    * one shot requiring during initialization and as node module
+    * possibility to intercept 404, 500, and all others
+    * possibility to serve different content per extension ... e.g. .md files
+    * rewrite rules through JS regexp
+    * something else I am still thinking about ...
+  * I believe after that there's not much left, except creating automation tests through phantom js and wru
 
 License
 -------
