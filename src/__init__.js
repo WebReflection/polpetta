@@ -17,7 +17,7 @@ else {
         "======================================================="
       ].join("\n"));
     } else {
-      // require(path.join(p.root, "test.njs"));
+      server = http.createServer(createServer);
       serverListen(server.on("error", serverListen.error));
     }
   });

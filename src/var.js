@@ -15,21 +15,19 @@ var
       this.found = ~value.indexOf("polpetta")
     ;
   }, {}).slice(1),
-  HOST_USER_PORT = arguments.length == 1 ?
-    (/^\d+$/.test(arguments[0]) ?
-      arguments[0] : arguments[1]) :
-    arguments[1]
+  CWD = process.cwd(),
+  HOST_USER_PORT = (/^(\d+)$/.test(arguments[0]) ||
+                   /^(\d+)$/.test(arguments[1])) &&
+                   RegExp.$1
   ,
-  port =  HOST_USER_PORT ||
-          HOST_INITIAL_PORT,
-  server = http.createServer(
-    createServer
-  ),
   DIR = __dirname,
   SEP = path.sep,
   HEADERS = {},
-  TMP = env.TMP || env.TMPDIR || env.TEMP || "/tmp" || process.cwd(),
+  TMP = env.TMP || env.TMPDIR || env.TEMP || CWD,
+  port =  HOST_USER_PORT ||
+          HOST_INITIAL_PORT,
   keys = Object.keys,
   defineProperty = Object.defineProperty,
-  polpettaKeys
+  polpettaKeys,
+  server
 ;

@@ -74,7 +74,11 @@ defineImmutableProperties(polpetta, {
   resolve: resolve,
 
   // the root folder for this server
-  root: path.resolve(DIR, arguments[0] || "./"),
+  root: path.resolve(DIR,
+    arguments.length == 1 && HOST_USER_PORT ?
+      CWD :
+      arguments[0] || CWD
+    ),
 
   /**
    * Returns a valid type (mime/type)
@@ -97,7 +101,7 @@ defineImmutableProperties(polpetta, {
   },
 
   // current version
-  version: "0.1.0"
+  version: "0.1.1"
 
 });
 
