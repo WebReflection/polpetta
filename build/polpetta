@@ -47,13 +47,10 @@ function createServer(
   var
     client = url.parse(request.url, true),
     query = client.query,
-    lookingFor = decodeURIComponent(
-      client.pathname
-    ),
     file = polpetta.resolve(
-      lookingFor.slice(-1) == "/" ?
-        findHome(lookingFor) :
-        lookingFor
+      decodeURIComponent(
+        client.pathname
+      )
     ),
     ext = path.extname(file),
     output = [],
@@ -140,30 +137,19 @@ function fileStats(
     isDir = notAnError && stats.isDirectory(),
     isFile = notAnError && stats.isFile(),
     output = this,
-    files,
-    posted,
     tmp
   ;
   switch (true) {
     case isFile:
       if (ext == ".njs") {
-        if (request.method == "POST") {
-          files = output.file;
-          posted = querystring.parse(
-            output.join("")
-          );
-          output = [];
-        }
-        requireNJS(
-          file,
+        serveNJS(
           output,
+          file,
           polpetta,
           request,
           response,
           client,
-          query,
-          posted,
-          files
+          query
         );
       } else {
         tmp = polpetta.encoding(ext);
@@ -183,19 +169,32 @@ function fileStats(
     case isDir:
       tmp = findHome(file + SEP);
       if (1 < (tmp.length - file.length)) {
-        fs.stat(
-          tmp,
-          fileStats.bind(
+        ext = path.extname(tmp);
+        if (ext == ".njs") {
+          serveNJS(
             output,
             tmp,
             polpetta,
             request,
             response,
             client,
-            query,
-            path.extname(file)
-          )
-        );
+            query
+          );
+        } else {
+          fs.stat(
+            tmp,
+            fileStats.bind(
+              output,
+              tmp,
+              polpetta,
+              request,
+              response,
+              client,
+              query,
+              ext
+            )
+          );
+        }
       } else if (LIST_FILES_AND_FOLDERS) {
         fs.readdir(
           file,
@@ -237,7 +236,9 @@ findHome.lookFor = [
   "index.htm"
 ];
 findHome.filter = function (main) {
-  return fs.existsSync(polpetta.resolve(this + main));
+  return this.found || (
+    this.found = fs.existsSync(this + main)
+  );
 };
 
 // when stuff is done, flush the output
@@ -330,7 +331,7 @@ function grabChunks(chunk) {
 
 grabChunks.writeFile = function (self, err) {
   if (err) {
-    this.error = true;
+    this.error = err;
   } else {
     this.size = fs.statSync(this.tmp_name).size;
   }
@@ -366,7 +367,7 @@ grabChunks.forEach = function (data, i) {
               path.extname(filename),
               "application/octet-stream"
             ),
-            error: false,
+            error: null,
             size: 0
           };
           if (this.file.hasOwnProperty(name)) {
@@ -650,6 +651,35 @@ function resolve(src) {
   return src.indexOf(polpetta.root) ? "" : src;
 }
 
+function serveNJS(
+  output,
+  file,
+  polpetta,
+  request,
+  response,
+  client,
+  query
+) {
+  var files, posted;
+  if (request.method == "POST") {
+    files = output.file;
+    posted = querystring.parse(
+      output.join("")
+    );
+    output = [];
+  }
+  requireNJS(
+    file,
+    output,
+    polpetta,
+    request,
+    response,
+    client,
+    query,
+    posted,
+    files
+  );
+}
 // function used to perform very first connection
 function serverListen() {
   server.listen(port, HOST_NAME, serverListen.connect);
@@ -1827,7 +1857,7 @@ defineImmutableProperties(polpetta, {
   },
 
   // current version
-  version: "0.1.4"
+  version: "0.1.5"
 
 });
 

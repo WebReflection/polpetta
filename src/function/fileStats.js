@@ -16,30 +16,19 @@ function fileStats(
     isDir = notAnError && stats.isDirectory(),
     isFile = notAnError && stats.isFile(),
     output = this,
-    files,
-    posted,
     tmp
   ;
   switch (true) {
     case isFile:
       if (ext == ".njs") {
-        if (request.method == "POST") {
-          files = output.file;
-          posted = querystring.parse(
-            output.join("")
-          );
-          output = [];
-        }
-        requireNJS(
-          file,
+        serveNJS(
           output,
+          file,
           polpetta,
           request,
           response,
           client,
-          query,
-          posted,
-          files
+          query
         );
       } else {
         tmp = polpetta.encoding(ext);
@@ -59,19 +48,32 @@ function fileStats(
     case isDir:
       tmp = findHome(file + SEP);
       if (1 < (tmp.length - file.length)) {
-        fs.stat(
-          tmp,
-          fileStats.bind(
+        ext = path.extname(tmp);
+        if (ext == ".njs") {
+          serveNJS(
             output,
             tmp,
             polpetta,
             request,
             response,
             client,
-            query,
-            path.extname(file)
-          )
-        );
+            query
+          );
+        } else {
+          fs.stat(
+            tmp,
+            fileStats.bind(
+              output,
+              tmp,
+              polpetta,
+              request,
+              response,
+              client,
+              query,
+              ext
+            )
+          );
+        }
       } else if (LIST_FILES_AND_FOLDERS) {
         fs.readdir(
           file,

@@ -13,5 +13,7 @@ findHome.lookFor = [
   "index.htm"
 ];
 findHome.filter = function (main) {
-  return fs.existsSync(polpetta.resolve(this + main));
+  return this.found || (
+    this.found = fs.existsSync(this + main)
+  );
 };

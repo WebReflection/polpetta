@@ -7,13 +7,10 @@ function createServer(
   var
     client = url.parse(request.url, true),
     query = client.query,
-    lookingFor = decodeURIComponent(
-      client.pathname
-    ),
     file = polpetta.resolve(
-      lookingFor.slice(-1) == "/" ?
-        findHome(lookingFor) :
-        lookingFor
+      decodeURIComponent(
+        client.pathname
+      )
     ),
     ext = path.extname(file),
     output = [],

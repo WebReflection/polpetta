@@ -5,7 +5,7 @@ function grabChunks(chunk) {
 
 grabChunks.writeFile = function (self, err) {
   if (err) {
-    this.error = true;
+    this.error = err;
   } else {
     this.size = fs.statSync(this.tmp_name).size;
   }
@@ -41,7 +41,7 @@ grabChunks.forEach = function (data, i) {
               path.extname(filename),
               "application/octet-stream"
             ),
-            error: false,
+            error: null,
             size: 0
           };
           if (this.file.hasOwnProperty(name)) {
