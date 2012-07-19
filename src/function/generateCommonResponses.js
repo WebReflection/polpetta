@@ -7,15 +7,10 @@ function generateCommonResponses(code) {
     polpetta,
     response
   ) {
-    output.push(
-      polpetta.code(code)
+    commonResponses.Status = polpetta.code(code);
+    response.writeHead(
+      code, commonResponses
     );
-    return flushResponse.call(
-      output,
-      polpetta,
-      response,
-      code,
-      "txt"
-    );
-  };
+    response.end();
+  }
 }

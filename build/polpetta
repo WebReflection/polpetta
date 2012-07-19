@@ -47,11 +47,15 @@ function createServer(
   var
     client = url.parse(request.url, true),
     query = client.query,
-    file = polpetta.resolve(
-      decodeURIComponent(
-        client.pathname
+    pathname = client.pathname,
+    file = pathname == "/" ?
+      polpetta.root :
+      polpetta.resolve(
+        decodeURIComponent(
+          pathname
+        )
       )
-    ),
+    ,
     ext = path.extname(file),
     output = [],
     contentType = request.headers["content-type"] || "",
@@ -167,6 +171,14 @@ function fileStats(
       }
       break;
     case isDir:
+      tmp = client.pathname;
+      if (tmp.slice(SEP_LENGTH_NEGATIVE) != SEP) {
+        redirect.Location = tmp + SEP;
+        response.writeHead(
+          301, redirect
+        );
+        return response.end();
+      }
       tmp = findHome(file + SEP);
       if (1 < (tmp.length - file.length)) {
         ext = path.extname(tmp);
@@ -242,19 +254,14 @@ findHome.filter = function (main) {
 };
 
 function findRoot(args) {
-  // only the port has been specified
-  if (
-    // nothing has been specified
+  // nothing has been specified or ...
+  return (
     !args.length || (
       // only the port has been specified
       args.length == 1 && HOST_USER_PORT
-    )
-  ) {
-    return CWD;
-  }
-  return path.resolve(
-    CWD, args[0]
-  );
+    ) ?
+      CWD : path.resolve(CWD, args[0])
+  ) + SEP;
 }
 
 // when stuff is done, flush the output
@@ -323,17 +330,12 @@ function generateCommonResponses(code) {
     polpetta,
     response
   ) {
-    output.push(
-      polpetta.code(code)
+    commonResponses.Status = polpetta.code(code);
+    response.writeHead(
+      code, commonResponses
     );
-    return flushResponse.call(
-      output,
-      polpetta,
-      response,
-      code,
-      "txt"
-    );
-  };
+    response.end();
+  }
 }
 // simply returns the key if present
 function getValue(key, def) {
@@ -522,7 +524,7 @@ function readDir(
       response
     );
   } else {
-    dirName = dirName.replace(polpetta.root, "") + "/";
+    dirName = "/" + dirName.replace(polpetta.root, "");
     output.push(
       "<!doctype html>",
       "<html>",
@@ -542,7 +544,7 @@ function readDir(
     );
     if (dirName != "/") {
       output.push(
-        '<li><a href="' + dirName + '..">..</a></li>'
+        '<li><a href="..">..</a></li>'
       );
     }
     output.dirName = dirName;
@@ -565,7 +567,7 @@ function readDir(
 
 readDir.forEach = function (name) {
   this.push(
-    '<li><a href="' + this.dirName + name + '">' + name + '</a></li>'
+    '<li><a href="' + name + '">' + name + '</a></li>'
   );
 };
 // once the file has been read ...
@@ -660,7 +662,7 @@ function requireNJS(
 // see polpetta.resolve
 function resolve(src) {
   src = path.resolve(
-		path.join(polpetta.root, src)
+		polpetta.root + src
 	);
 	// root must be at index 0
   return src.indexOf(polpetta.root) ? "" : src;
@@ -1739,6 +1741,13 @@ const EXTENSION_TO_MIME = {".ez":"application/andrew-inset",
 // local variables
 var
   polpetta = {},
+  redirect = {
+    Location: null
+  },
+  commonResponses = {
+    Connection: "close",
+    Status: ""
+  },
   fs = require("fs"),
   http = require("http"),
   querystring = require("querystring"),
@@ -1759,6 +1768,7 @@ var
   ,
   // DIR = __dirname,
   SEP = path.sep,
+  SEP_LENGTH_NEGATIVE = -SEP.length,
   HEADERS = {},
   TMP = env.TMP || env.TMPDIR || env.TEMP || CWD,
   port =  HOST_USER_PORT ||
@@ -1867,7 +1877,7 @@ defineImmutableProperties(polpetta, {
   },
 
   // current version
-  version: "0.1.7"
+  version: "0.1.8"
 
 });
 

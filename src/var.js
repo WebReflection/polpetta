@@ -2,6 +2,13 @@
 // local variables
 var
   polpetta = {},
+  redirect = {
+    Location: null
+  },
+  commonResponses = {
+    Connection: "close",
+    Status: ""
+  },
   fs = require("fs"),
   http = require("http"),
   querystring = require("querystring"),
@@ -22,6 +29,7 @@ var
   ,
   // DIR = __dirname,
   SEP = path.sep,
+  SEP_LENGTH_NEGATIVE = -SEP.length,
   HEADERS = {},
   TMP = env.TMP || env.TMPDIR || env.TEMP || CWD,
   port =  HOST_USER_PORT ||

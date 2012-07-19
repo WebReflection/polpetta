@@ -15,7 +15,7 @@ function readDir(
       response
     );
   } else {
-    dirName = dirName.replace(polpetta.root, "") + "/";
+    dirName = "/" + dirName.replace(polpetta.root, "");
     output.push(
       "<!doctype html>",
       "<html>",
@@ -35,7 +35,7 @@ function readDir(
     );
     if (dirName != "/") {
       output.push(
-        '<li><a href="' + dirName + '..">..</a></li>'
+        '<li><a href="..">..</a></li>'
       );
     }
     output.dirName = dirName;
@@ -58,6 +58,6 @@ function readDir(
 
 readDir.forEach = function (name) {
   this.push(
-    '<li><a href="' + this.dirName + name + '">' + name + '</a></li>'
+    '<li><a href="' + name + '">' + name + '</a></li>'
   );
 };

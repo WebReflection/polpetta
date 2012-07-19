@@ -46,6 +46,14 @@ function fileStats(
       }
       break;
     case isDir:
+      tmp = client.pathname;
+      if (tmp.slice(SEP_LENGTH_NEGATIVE) != SEP) {
+        redirect.Location = tmp + SEP;
+        response.writeHead(
+          301, redirect
+        );
+        return response.end();
+      }
       tmp = findHome(file + SEP);
       if (1 < (tmp.length - file.length)) {
         ext = path.extname(tmp);

@@ -7,11 +7,15 @@ function createServer(
   var
     client = url.parse(request.url, true),
     query = client.query,
-    file = polpetta.resolve(
-      decodeURIComponent(
-        client.pathname
+    pathname = client.pathname,
+    file = pathname == "/" ?
+      polpetta.root :
+      polpetta.resolve(
+        decodeURIComponent(
+          pathname
+        )
       )
-    ),
+    ,
     ext = path.extname(file),
     output = [],
     contentType = request.headers["content-type"] || "",
