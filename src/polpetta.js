@@ -93,15 +93,15 @@ defineImmutableProperties(polpetta, {
    *    polpetta.type(".js");   // => "application/javascript"
    */
   type: function (type, def) {
-    return EXTENSION_TO_MIME[
+    return EXTENSION_TO_MIME[(
       type[0] == "." ?
         type :
         "." + type
-    ] || def || "text/html";
+    ).toLowerCase()] || def || "text/html";
   },
 
   // current version
-  version: "0.1.3"
+  version: "0.1.4"
 
 });
 
