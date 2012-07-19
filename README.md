@@ -170,6 +170,7 @@ TODOs
     * possibility to serve different content per extension ... e.g. .md files
     * rewrite rules through JS regexp
     * something else I am still thinking about ...
+  * add default favicon with polpetta logo
   * I believe after that there's not much left, except creating automation tests through phantom js and wru
 
 License
