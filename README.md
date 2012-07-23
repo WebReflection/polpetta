@@ -107,12 +107,13 @@ All you have to do in your file is to export an `onload` function. This function
     // generic.njs file
     this.onload = function (
       request,
-      response
+      response,
+      polpetta
     ) {
       var fs = require("fs");
       fs.writeFileSync("gotcha.txt", "it works");
       response.end();
-      // note that `this` here points
+      // note that polpetta here points
       // to a polpetta clone enriched
       // with some utility
       // and an output object
@@ -132,17 +133,16 @@ The even easier way is to install your most used modules globally via `npm insta
 Polpetta API
 ------------
 You can find almost everything documented in the [polpetta.js](https://github.com/WebReflection/polpetta/blob/master/src/polpetta.js) file.
-What you won't find there is a `this.get(key[, default])` method, used to retrieve query string properties as it is for the PHP `$_GET[$key]` global, a `this.post(key[, default])` method to retrieve posted data, a `this.cookie(key[, default])` method, to get cookie, followed by `this.cookie.set(key, value)` to set them.
+What you won't find there is a `polpetta.get(key[, default])` method, used to retrieve query string properties as it is for the PHP `$_GET[$key]` global, a `polpetta.post(key[, default])` method to retrieve posted data, a `polpetta.cookie(key[, default])` method, to get cookie, followed by `polpetta.cookie.set(key, value)` to set them.
 All these objects have a `obj.keys()` method too to retrieve all parsed keys for *get*, *post*, or *cookie*.
 
 You can see an examples for [cookie](https://github.com/WebReflection/polpetta/blob/master/test/cookie.njs), [get or post](https://github.com/WebReflection/polpetta/blob/master/test/post.njs), and [files upload](https://github.com/WebReflection/polpetta/blob/master/test/file.njs) in the test folder.
 
-Last, but not least, there is a `this.output` **Array** property where you can push your content and `this.output.flush([type || [code, type]])` once you have done.
+Last, but not least, there is a `polpetta.output` **Array** property where you can push your content and `polpetta.output.flush([type || [code, type]])` once you have done.
 Bear in mind this is not a good technique to serve big files on the fly but that's not the purpose of the `output` property.
 
     // example of get and output
-    this.onload = function (req, res) {
-      var p = this; // polpetta
+    this.onload = function (req, res, p) {
       p.output.push(
         "Hello ",
           p.get("name",
