@@ -1,5 +1,5 @@
 this.onload = function (
-  req, res
+  req, res, p
 ) {
 
   var fs = require("fs");
@@ -10,14 +10,14 @@ this.onload = function (
       "<meta name='viewport' content='width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no'/>"
   ].forEach(function (html) {
     this.push(html);
-  }, this.output);
+  }, p.output);
 
-  if (this.get("upload") != null) {
+  if (p.get("upload") != null) {
 
     // clean up for testing purpose
-    this.file.keys().forEach(function (key) {
+    p.file.keys().forEach(function (key) {
       [].concat(
-        this.file(key)
+        p.file(key)
       ).forEach(function (file) {
         if (!file.error) {
           // if you want to check files
@@ -27,24 +27,24 @@ this.onload = function (
             file.tmp_name
           );
         }
-      }, this);
-      this.output.push(
-        JSON.stringify(this.file(key)), "<br />"
+      }, p);
+      p.output.push(
+        JSON.stringify(p.file(key)), "<br />"
       );
-    }, this);
+    });
 
-    this.output.push(
-      JSON.stringify(this.file.keys()), "<br />"
+    p.output.push(
+      JSON.stringify(p.file.keys()), "<br />"
     );
 
     // show result
-    this.output.push(
+    p.output.push(
       "<hr />",
-      JSON.stringify(this.post.keys()), "<br />",
-      this.post("text")
+      JSON.stringify(p.post.keys()), "<br />",
+      p.post("text")
     );
   } else {
-    this.output.push(
+    p.output.push(
       "<form method='post' enctype='multipart/form-data' action='?upload'>",
         "<input name='test' type='file'/>", "<br />",
         "<input name='test' type='file'/>", "<br />",
@@ -54,5 +54,5 @@ this.onload = function (
       "</form>"
     );
   }
-  this.output.flush();
+  p.output.flush();
 };

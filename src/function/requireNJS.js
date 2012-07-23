@@ -59,9 +59,9 @@ function requireNJS(
   polpettaFake.file.keys = keys.bind(null, files);
   polpettaFake.cookie.keys = keys.bind(null, cookie);
   polpettaFake.cookie.set = cookieManager.set.bind(cookies);
-  module.onload.call(
-    polpettaFake,
+  module.onload(
     request,
-    response
+    response,
+    polpettaFake
   );
 }

@@ -1,5 +1,5 @@
 this.onload = function (
-  req, res
+  req, res, p
 ) {
   var key = "__test__";
 
@@ -9,35 +9,35 @@ this.onload = function (
       "<meta name='viewport' content='width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no'/>"
   ].forEach(function (html) {
     this.push(html);
-  }, this.output);
+  }, p.output);
 
   if (
-    this.cookie(key + "1") != null &&
-    this.cookie(key + "2") != null
+    p.cookie(key + "1") != null &&
+    p.cookie(key + "2") != null
   ) {
-    this.output.push(
-      JSON.stringify(this.cookie.keys()), "<br />",
-      this.cookie(key + "1"), "<br />",
-      this.cookie(key + "2")
+    p.output.push(
+      JSON.stringify(p.cookie.keys()), "<br />",
+      p.cookie(key + "1"), "<br />",
+      p.cookie(key + "2")
     );
   } else {
-    this.output.push(
+    p.output.push(
       "<a href='?'>click here to test cookies</a>"
     );
 
     // to set a cookie you need a header
     // object
-    this.cookie.set(
+    p.cookie.set(
       key + "1", "(က) Polpetta 1"
     );
-    this.cookie.set(
+    p.cookie.set(
       key + "2", "(က) Polpetta 2"
     );
   }
 
   // flush passing the header
-  this.output.flush(
+  p.output.flush(
     200,
-    this.header("html")
+    p.header("html")
   );
 };

@@ -48,7 +48,7 @@ function createServer(
     client = url.parse(request.url, true),
     query = client.query,
     pathname = client.pathname,
-    file = pathname == "/" ?
+    file = pathname == WEB_SEP ?
       polpetta.root :
       polpetta.resolve(
         decodeURIComponent(
@@ -172,13 +172,14 @@ function fileStats(
       break;
     case isDir:
       tmp = client.pathname;
-      if (tmp.slice(SEP_LENGTH_NEGATIVE) != SEP) {
-        redirect.Location = tmp + SEP;
+      if (tmp.slice(WEB_SEP_NEGATIVE_LENGTH) != WEB_SEP) {
+        redirect.Location = tmp + WEB_SEP;
         response.writeHead(
           301, redirect
         );
         return response.end();
       }
+      file = systemPath(file);
       tmp = findHome(file + SEP);
       if (1 < (tmp.length - file.length)) {
         ext = path.extname(tmp);
@@ -524,7 +525,9 @@ function readDir(
       response
     );
   } else {
-    dirName = "/" + dirName.replace(polpetta.root, "");
+    dirName = WEB_SEP + webPath(
+      dirName.replace(polpetta.root, "")
+    );
     output.push(
       "<!doctype html>",
       "<html>",
@@ -653,16 +656,16 @@ function requireNJS(
   polpettaFake.file.keys = keys.bind(null, files);
   polpettaFake.cookie.keys = keys.bind(null, cookie);
   polpettaFake.cookie.set = cookieManager.set.bind(cookies);
-  module.onload.call(
-    polpettaFake,
+  module.onload(
     request,
-    response
+    response,
+    polpettaFake
   );
 }
 // see polpetta.resolve
 function resolve(src) {
   src = path.resolve(
-		polpetta.root + src
+		polpetta.root + systemPath(src)
 	);
 	// root must be at index 0
   return src.indexOf(polpetta.root) ? "" : src;
@@ -707,7 +710,7 @@ serverListen.connect = function () {
   if (!serverListen.connected) {
     serverListen.connected = true;
     var address = server.address();
-    console.log("http://" + address.address + ":" + address.port + "/");
+    console.log("http:" + WEB_SEP + WEB_SEP + address.address + ":" + address.port + WEB_SEP);
     console.log([
       "#",
       "(က)",
@@ -756,6 +759,32 @@ function setPolpettaValue(key) {
   this[key] = polpetta[key];
 }
 
+var systemPath = SEP == WEB_SEP ?
+  function (path) {
+    return path;
+  } :
+  function (path) {
+    return path.replace(
+      systemPath.re,
+      SEP
+    );
+  }
+;
+
+systemPath.re = RegExp(WEB_SEP, "g");
+var webPath = SEP == WEB_SEP ?
+  function (path) {
+    return path;
+  } :
+  function (path) {
+    return path.replace(
+      webPath.re,
+      WEB_SEP
+    );
+  }
+;
+
+webPath.re = RegExp(SEP, "g");
 const EXTENSION_TO_MIME = {".ez":"application/andrew-inset",
 ".aw":"application/applixware",
 ".atom":"application/atom+xml",
@@ -1768,7 +1797,8 @@ var
   ,
   // DIR = __dirname,
   SEP = path.sep,
-  SEP_LENGTH_NEGATIVE = -SEP.length,
+  WEB_SEP = "/",
+  WEB_SEP_NEGATIVE_LENGTH = -WEB_SEP.length,
   HEADERS = {},
   TMP = env.TMP || env.TMPDIR || env.TEMP || CWD,
   port =  HOST_USER_PORT ||
@@ -1877,7 +1907,7 @@ defineImmutableProperties(polpetta, {
   },
 
   // current version
-  version: "0.1.8"
+  version: "0.2.0"
 
 });
 

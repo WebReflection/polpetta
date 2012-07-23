@@ -29,7 +29,8 @@ var
   ,
   // DIR = __dirname,
   SEP = path.sep,
-  SEP_LENGTH_NEGATIVE = -SEP.length,
+  WEB_SEP = "/",
+  WEB_SEP_NEGATIVE_LENGTH = -WEB_SEP.length,
   HEADERS = {},
   TMP = env.TMP || env.TMPDIR || env.TEMP || CWD,
   port =  HOST_USER_PORT ||

@@ -8,7 +8,7 @@ function createServer(
     client = url.parse(request.url, true),
     query = client.query,
     pathname = client.pathname,
-    file = pathname == "/" ?
+    file = pathname == WEB_SEP ?
       polpetta.root :
       polpetta.resolve(
         decodeURIComponent(

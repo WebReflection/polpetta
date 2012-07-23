@@ -1,7 +1,8 @@
 // looks familiar, uh?
 this.onload = function (
   request,  // original request object
-  response  // original response object
+  response, // original response object
+  polpetta  // polpetta utility object
   // please note that polpetta does nothing
   // until you ask her to, so ... feel free
   // to use these two objects as you want
@@ -12,7 +13,7 @@ this.onload = function (
 ) {
   // if you want some easy way to go
   // push the output, and flush the content
-  this.output.push(
+  polpetta.output.push(
     '<!doctype html>',
     '<html>',
       '<head>',
@@ -33,8 +34,8 @@ this.onload = function (
       '</body>',
     '</html>'
   );
-  this.output.flush();
-  // `this` refers to a spiced polpetta
+  polpetta.output.flush();
+  // `polpetta` refers to a spiced polpetta
   // injected as context for the whole
   // response logic
 };

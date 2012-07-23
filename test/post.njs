@@ -1,5 +1,5 @@
 this.onload = function (
-  req, res
+  req, res, p
 ) {
 
   [
@@ -8,24 +8,24 @@ this.onload = function (
       "<meta name='viewport' content='width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no'/>"
   ].forEach(function (html) {
     this.push(html);
-  }, this.output);
+  }, p.output);
 
-  if (this.post("single") != null) {
-    this.output.push(
-      JSON.stringify(this.get.keys()),
+  if (p.post("single") != null) {
+    p.output.push(
+      JSON.stringify(p.get.keys()),
       "<br />",
-      JSON.stringify(this.get("test")),
+      JSON.stringify(p.get("test")),
       "<br />",
-      JSON.stringify(this.get("single")),
+      JSON.stringify(p.get("single")),
       "<hr />",
-      JSON.stringify(this.post.keys()),
+      JSON.stringify(p.post.keys()),
       "<br />",
-      JSON.stringify(this.post("test")),
+      JSON.stringify(p.post("test")),
       "<br />",
-      JSON.stringify(this.post("single"))
+      JSON.stringify(p.post("single"))
     );
   } else {
-    this.output.push(
+    p.output.push(
       "<form method='post' action='?test=(က) Polpetta&test=second&single=OK'>",
         "<input name='test' type='text'/>",
         "<input name='test' type='text'/>",
@@ -34,5 +34,5 @@ this.onload = function (
       "</form>"
     );
   }
-  this.output.flush();
+  p.output.flush();
 };

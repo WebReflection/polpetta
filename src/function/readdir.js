@@ -15,7 +15,9 @@ function readDir(
       response
     );
   } else {
-    dirName = "/" + dirName.replace(polpetta.root, "");
+    dirName = WEB_SEP + webPath(
+      dirName.replace(polpetta.root, "")
+    );
     output.push(
       "<!doctype html>",
       "<html>",
