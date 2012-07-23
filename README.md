@@ -134,7 +134,7 @@ Polpetta API
 ------------
 You can find almost everything documented in the [polpetta.js](https://github.com/WebReflection/polpetta/blob/master/src/polpetta.js) file.
 What you won't find there is a `polpetta.get(key[, default])` method, used to retrieve query string properties as it is for the PHP `$_GET[$key]` global, a `polpetta.post(key[, default])` method to retrieve posted data, a `polpetta.cookie(key[, default])` method, to get cookie, followed by `polpetta.cookie.set(key, value)` to set them.
-All these objects have a `obj.keys()` method too to retrieve all parsed keys for *get*, *post*, or *cookie*.
+All these objects have a `obj.keys()` method too to retrieve all parsed keys for *get*, *post*, *cookie*, or *file*.
 
 You can see an examples for [cookie](https://github.com/WebReflection/polpetta/blob/master/test/cookie.njs), [get or post](https://github.com/WebReflection/polpetta/blob/master/test/post.njs), and [files upload](https://github.com/WebReflection/polpetta/blob/master/test/file.njs) in the test folder.
 
