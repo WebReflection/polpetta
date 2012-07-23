@@ -59,7 +59,9 @@ function readDir(
 }
 
 readDir.forEach = function (name) {
-  this.push(
-    '<li><a href="' + name + '">' + name + '</a></li>'
-  );
+  if (name != HTACCESS_NAME) {
+    this.push(
+      '<li><a href="' + name + '">' + name + '</a></li>'
+    );
+  }
 };

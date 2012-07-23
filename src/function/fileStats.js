@@ -30,6 +30,12 @@ function fileStats(
           client,
           query
         );
+      } else if(file == htaccessPath) {
+        notFound(
+          output,
+          polpetta,
+          response
+        );
       } else {
         tmp = polpetta.encoding(ext);
         fs.readFile(
@@ -39,6 +45,7 @@ function fileStats(
             output,
             polpetta,
             response,
+            file,
             ext,
             tmp
           )

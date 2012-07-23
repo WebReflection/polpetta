@@ -22,9 +22,10 @@ const
                                 // this is for automatic port recognition
                                 // if argument [port] is not provided
 
-  // [TODO]
-  LIST_FILES_AND_FOLDERS = true // display the list of files
+  LIST_FILES_AND_FOLDERS = true,// display the list of files
                                 // if no index.njs or index.html is found
+
+  HTACCESS_NAME = ".htaccess"   // experimental .htaccess name
 ;
 
 // after this point, if you don't know what you are doing .. please DON'T !!!
@@ -54,6 +55,7 @@ function createPathReplacer(find, place) {
     );
   };
 }
+
 // entry point for all requestes
 function createServer(
   request,
@@ -170,6 +172,12 @@ function fileStats(
           client,
           query
         );
+      } else if(file == htaccessPath) {
+        notFound(
+          output,
+          polpetta,
+          response
+        );
       } else {
         tmp = polpetta.encoding(ext);
         fs.readFile(
@@ -179,6 +187,7 @@ function fileStats(
             output,
             polpetta,
             response,
+            file,
             ext,
             tmp
           )
@@ -516,6 +525,30 @@ function help() {
 var internalServerError = generateCommonResponses(
   500
 );
+function invokedHtaccess(
+  method,
+  polpetta,
+  request,
+  response,
+  file,
+  ext,
+  data
+) {
+  if (htaccess) {
+    event.defaultPrevented = false;
+    event.type = method.slice(2);
+    event.polpetta = polpetta;
+    event.request = request;
+    event.response = response;
+    event.file = file;
+    event.ext = ext;
+    event.data = data;
+    return htaccess[method](event) === false ||
+      event.defaultPrevented === true
+    ;
+  }
+  return false;
+}
 // reused function for all Not Founds
 var notFound = generateCommonResponses(
   404
@@ -585,14 +618,17 @@ function readDir(
 }
 
 readDir.forEach = function (name) {
-  this.push(
-    '<li><a href="' + name + '">' + name + '</a></li>'
-  );
+  if (name != HTACCESS_NAME) {
+    this.push(
+      '<li><a href="' + name + '">' + name + '</a></li>'
+    );
+  }
 };
 // once the file has been read ...
 function readFile(
   polpetta,
   response,
+  file,
   ext,
   mode,
   err,
@@ -604,7 +640,15 @@ function readFile(
       polpetta,
       response
     );
-  } else {
+  } else if (!invokedHtaccess(
+    "onstaticfile",
+    polpetta,
+    null,
+    response,
+    file,
+    ext,
+    data
+  )) {
     response.writeHead(
       200,
       polpetta.header(ext)
@@ -1759,6 +1803,20 @@ const EXTENSION_TO_MIME = {".ez":"application/andrew-inset",
 
 // local variables
 var
+  // dependencies
+  fs = require("fs"),
+  http = require("http"),
+  querystring = require("querystring"),
+  stream = require("stream"),
+  url = require("url"),
+  path = require("path"),
+  env = process.env,
+
+  // from globals
+  keys = Object.keys,
+  defineProperty = Object.defineProperty,
+
+  // internal objects
   polpetta = {},
   redirect = {
     Location: null
@@ -1767,25 +1825,24 @@ var
     Connection: "close",
     Status: ""
   },
-  fs = require("fs"),
-  http = require("http"),
-  querystring = require("querystring"),
-  stream = require("stream"),
-  url = require("url"),
-  path = require("path"),
-  env = process.env,
+  event = defineImmutableProperties({}, {
+    preventDefault: function () {
+      event.defaultPrevented = true;
+    }
+  }),
   arguments = process.argv.filter(function (value) {
     return this.found ?
       value :
       this.found = ~value.indexOf("polpetta")
     ;
   }, {}).slice(1),
+
+  // internal constants
   CWD = process.cwd(),
   HOST_USER_PORT = (/^(\d+)$/.test(arguments[0]) ||
                    /^(\d+)$/.test(arguments[1])) &&
                    RegExp.$1
   ,
-  // DIR = __dirname,
   SEP = path.sep,
   WEB_SEP = "/",
   WEB_SEP_NEGATIVE_LENGTH = -WEB_SEP.length,
@@ -1793,11 +1850,13 @@ var
   TMP = env.TMP || env.TMPDIR || env.TEMP || CWD,
   port =  HOST_USER_PORT ||
           HOST_INITIAL_PORT,
-  keys = Object.keys,
-  defineProperty = Object.defineProperty,
+
+  // common/reused variables
   polpettaKeys,
   server,
-  systemPath, webPath
+  systemPath, webPath,
+  htaccess,
+  htaccessPath
 ;
 
 if (SEP == WEB_SEP) {
@@ -1913,6 +1972,13 @@ defineImmutableProperties(polpetta, {
 
 polpettaKeys = keys(polpetta);
 
+if (fs.existsSync(
+  htaccessPath = resolve(HTACCESS_NAME)
+)) {
+  htaccess = require(
+    htaccessPath
+  );
+}
 // need some help ?
 if (/^--?h(?:elp)?$/i.test(arguments[0])) {
   help();

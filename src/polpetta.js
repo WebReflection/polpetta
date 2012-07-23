@@ -97,7 +97,7 @@ defineImmutableProperties(polpetta, {
   },
 
   // current version
-  version: "0.2.1"
+  version: "0.2.2"
 
 });
 

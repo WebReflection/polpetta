@@ -8,9 +8,10 @@ const
                                 // this is for automatic port recognition
                                 // if argument [port] is not provided
 
-  // [TODO]
-  LIST_FILES_AND_FOLDERS = true // display the list of files
+  LIST_FILES_AND_FOLDERS = true,// display the list of files
                                 // if no index.njs or index.html is found
+
+  HTACCESS_NAME = ".htaccess"   // experimental .htaccess name
 ;
 
 // after this point, if you don't know what you are doing .. please DON'T !!!

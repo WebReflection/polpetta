@@ -1,6 +1,20 @@
 
 // local variables
 var
+  // dependencies
+  fs = require("fs"),
+  http = require("http"),
+  querystring = require("querystring"),
+  stream = require("stream"),
+  url = require("url"),
+  path = require("path"),
+  env = process.env,
+
+  // from globals
+  keys = Object.keys,
+  defineProperty = Object.defineProperty,
+
+  // internal objects
   polpetta = {},
   redirect = {
     Location: null
@@ -9,25 +23,24 @@ var
     Connection: "close",
     Status: ""
   },
-  fs = require("fs"),
-  http = require("http"),
-  querystring = require("querystring"),
-  stream = require("stream"),
-  url = require("url"),
-  path = require("path"),
-  env = process.env,
+  event = defineImmutableProperties({}, {
+    preventDefault: function () {
+      event.defaultPrevented = true;
+    }
+  }),
   arguments = process.argv.filter(function (value) {
     return this.found ?
       value :
       this.found = ~value.indexOf("polpetta")
     ;
   }, {}).slice(1),
+
+  // internal constants
   CWD = process.cwd(),
   HOST_USER_PORT = (/^(\d+)$/.test(arguments[0]) ||
                    /^(\d+)$/.test(arguments[1])) &&
                    RegExp.$1
   ,
-  // DIR = __dirname,
   SEP = path.sep,
   WEB_SEP = "/",
   WEB_SEP_NEGATIVE_LENGTH = -WEB_SEP.length,
@@ -35,11 +48,13 @@ var
   TMP = env.TMP || env.TMPDIR || env.TEMP || CWD,
   port =  HOST_USER_PORT ||
           HOST_INITIAL_PORT,
-  keys = Object.keys,
-  defineProperty = Object.defineProperty,
+
+  // common/reused variables
   polpettaKeys,
   server,
-  systemPath, webPath
+  systemPath, webPath,
+  htaccess,
+  htaccessPath
 ;
 
 if (SEP == WEB_SEP) {

@@ -7,6 +7,7 @@ POLPETTA =  src/intro.js                      \
             src/EXTENSION_TO_MIME.js          \
             src/var.js                        \
             src/polpetta.js                   \
+            src/htaccess.js                   \
             src/__init__.js
 
 # default build task

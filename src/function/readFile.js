@@ -3,6 +3,7 @@
 function readFile(
   polpetta,
   response,
+  file,
   ext,
   mode,
   err,
@@ -14,7 +15,15 @@ function readFile(
       polpetta,
       response
     );
-  } else {
+  } else if (!invokedHtaccess(
+    "onstaticfile",
+    polpetta,
+    null,
+    response,
+    file,
+    ext,
+    data
+  )) {
     response.writeHead(
       200,
       polpetta.header(ext)
