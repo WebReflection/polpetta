@@ -38,5 +38,15 @@ var
   keys = Object.keys,
   defineProperty = Object.defineProperty,
   polpettaKeys,
-  server
+  server,
+  systemPath, webPath
 ;
+
+if (SEP == WEB_SEP) {
+  systemPath = webPath = function (path) {
+    return path;
+  };
+} else {
+  systemPath = createPathReplacer(WEB_SEP, SEP);
+  webPath = createPathReplacer(SEP, WEB_SEP);
+}

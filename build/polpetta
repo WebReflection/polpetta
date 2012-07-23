@@ -30,6 +30,11 @@ const
 // after this point, if you don't know what you are doing .. please DON'T !!!
 
 
+function addPathSlashes(path) {
+  return path.replace(
+    /(\\|\/)/g, "\\$1"
+  );
+}
 function cookieManager(key, def) {
   return getValue.call(this, key, def);
 }
@@ -39,6 +44,16 @@ cookieManager.set = function (key, value) {
     setCookie.apply(null, arguments)
   );
 };
+function createPathReplacer(find, place) {
+  var re = RegExp(
+    addPathSlashes(find), "g"
+  );
+  return function (path) {
+    return path.replace(
+      re, place
+    );
+  };
+}
 // entry point for all requestes
 function createServer(
   request,
@@ -179,7 +194,8 @@ function fileStats(
         );
         return response.end();
       }
-      file = systemPath(file);
+      // resolved already as system file
+      // no need to file = systemPath(file);
       tmp = findHome(file + SEP);
       if (1 < (tmp.length - file.length)) {
         ext = path.extname(tmp);
@@ -759,32 +775,6 @@ function setPolpettaValue(key) {
   this[key] = polpetta[key];
 }
 
-var systemPath = SEP == WEB_SEP ?
-  function (path) {
-    return path;
-  } :
-  function (path) {
-    return path.replace(
-      systemPath.re,
-      SEP
-    );
-  }
-;
-
-systemPath.re = RegExp(WEB_SEP, "g");
-var webPath = SEP == WEB_SEP ?
-  function (path) {
-    return path;
-  } :
-  function (path) {
-    return path.replace(
-      webPath.re,
-      WEB_SEP
-    );
-  }
-;
-
-webPath.re = RegExp(SEP, "g");
 const EXTENSION_TO_MIME = {".ez":"application/andrew-inset",
 ".aw":"application/applixware",
 ".atom":"application/atom+xml",
@@ -1806,8 +1796,18 @@ var
   keys = Object.keys,
   defineProperty = Object.defineProperty,
   polpettaKeys,
-  server
+  server,
+  systemPath, webPath
 ;
+
+if (SEP == WEB_SEP) {
+  systemPath = webPath = function (path) {
+    return path;
+  };
+} else {
+  systemPath = createPathReplacer(WEB_SEP, SEP);
+  webPath = createPathReplacer(SEP, WEB_SEP);
+}
 
 // the immutable polpetta definition
 // in alphabetic order
@@ -1907,7 +1907,7 @@ defineImmutableProperties(polpetta, {
   },
 
   // current version
-  version: "0.2.0"
+  version: "0.2.1"
 
 });
 

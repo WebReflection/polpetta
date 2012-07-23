@@ -54,7 +54,8 @@ function fileStats(
         );
         return response.end();
       }
-      file = systemPath(file);
+      // resolved already as system file
+      // no need to file = systemPath(file);
       tmp = findHome(file + SEP);
       if (1 < (tmp.length - file.length)) {
         ext = path.extname(tmp);
