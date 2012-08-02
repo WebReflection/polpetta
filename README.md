@@ -19,7 +19,9 @@ How Is Polpetta Different From Python SimpleHTTPServer, serverdir, etc ...
 --------------------------------------------------------------------------
 The JavaScript weekly description couldn't be more precise
 
-  Runs up a Node-powered HTTP server in any folder you want whereupon '.njs' files get executed CGI-style.
+
+    Runs up a Node-powered HTTP server in any folder you want whereupon '.njs' files get executed CGI-style.
+
 
 And this is almost it, except it finds automatically an available port if not specified, so you don't have to bother inventing numbers by your own, it allows interceptions on files via *.htaccess* like mechanism, and it `require("folder/file.njs")` to let you test modules for node.js in the possible easiest way ever, without writing from scratch again and again something able to run a web server.
 
