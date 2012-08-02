@@ -6,7 +6,7 @@ function requireNJS() {
     var module = require(this.path);
   } catch(o_O) {
     console.error(o_O);
-    return internalServerError.call(this);
+    return internalServerError.call(this, o_O);
   }
   module.onload(
     this.request,

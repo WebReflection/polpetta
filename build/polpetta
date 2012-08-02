@@ -214,6 +214,8 @@ endOfChunks.forEach = function (data, i) {
 endOfChunks.testFileName = /filename=("|')?([^\1]*?)\1/;
 endOfChunks.testName = /name=("|')?([^\1]*?)\1/;
 
+// onrequest should be intercepted even before the filestat check
+// however, get, post, cookie, and file should be available already
 function fileStat(err, stats) {
   var
     notAnError = !err,
@@ -236,20 +238,15 @@ function fileStat(err, stats) {
       }
       break;
     case isDir:
-      tmp = this.url.pathname;
+      tmp = getCurrentPathName(this);
       if (tmp.slice(WEB_SEP_NEGATIVE_LENGTH) != WEB_SEP) {
-        redirect.Location = tmp + WEB_SEP;
-        this.response.writeHead(
-          301, redirect
-        );
-        return this.response.end();
+        return polpetta_redirect.call(this, tmp + WEB_SEP);
       }
       tmp = findHome(this.path + SEP);
       if (1 < (tmp.length - this.path.length)) {
         this.path = tmp;
         ext = assignExt.call(this);
         if (ext == ".njs") {
-          this.path = tmp;
           requireNJS.call(this);
         } else {
           fs.stat(
@@ -263,11 +260,11 @@ function fileStat(err, stats) {
           readDir.bind(this)
         );
       } else {
-        forbidden.call(this);
+        forbidden.call(this, stats);
       }
       break;
     default:
-      notFound.call(this);
+      notFound.call(this, stats);
       break;
   }
 }
@@ -352,6 +349,21 @@ function fsStat() {
     fileStat.bind(this)
   );
 }
+function getCurrentPathName(polpetta) {
+  var
+    dirName = polpetta.path,
+    request_url = polpetta.request.url
+  ;
+  dirName = WEB_SEP + webPath(
+    dirName.replace(root, "")
+  );
+  // dirName should be at the root, right?
+  // so if indexOf is 0 then is not
+  return request_url.indexOf(dirName) ?
+    url.parse(request_url, true).pathname : dirName
+  ;
+}
+
 function getOrDefine(object, key, callback) {
   return has(object, key) ?
     object[key] : object[key] = callback(key)
@@ -395,13 +407,10 @@ function parseCookie(cookie) {
 }
 // used to show a directory content
 function readDir(err, files) {
-  var dirName = this.path;
   if (err) {
-    internalServerError.call(this);
+    internalServerError.call(this, err);
   } else {
-    dirName = WEB_SEP + webPath(
-      dirName.replace(root, "")
-    );
+    var dirName = getCurrentPathName(this);
     this.output.push(
       "<!doctype html>",
       "<html>",
@@ -448,7 +457,7 @@ function readFile(
   data
 ) {
   if (err) {
-    internalServerError.call(this);
+    internalServerError.call(this, err);
   } else if (!invokedHtaccess.call(
     this,
     200,
@@ -464,6 +473,15 @@ function readFile(
   }
 }
 
+function request_goes_on(polpetta, stats) {
+  return !invokedHtaccess.call(
+    polpetta,
+    200,
+    "onrequest",
+    stats
+  );
+}
+
 // used to require .njs files
 function requireNJS() {
   try {
@@ -471,7 +489,7 @@ function requireNJS() {
     var module = require(this.path);
   } catch(o_O) {
     console.error(o_O);
-    return internalServerError.call(this);
+    return internalServerError.call(this, o_O);
   }
   module.onload(
     this.request,
@@ -480,37 +498,6 @@ function requireNJS() {
   );
 }
 
-function serveNJS(
-  output,
-  file,
-  polpetta,
-  request,
-  response,
-  client,
-  query
-) {
-  var files, posted;
-  if (this.request.method == "POST") {
-    /*
-    files = this.output.file;
-    posted = querystring.parse(
-      output.join("")
-    );
-    output = [];
-    */
-  }
-  requireNJS(
-    file,
-    output,
-    polpetta,
-    request,
-    response,
-    client,
-    query,
-    posted,
-    files
-  );
-}
 // function used to perform very first connection
 function serverListen() {
   server.listen(port, HOST_NAME, serverListen.connect);
@@ -619,12 +606,12 @@ var forbidden = generateErrorResponses(
 // returns common function to call
 // when shit happens
 function generateErrorResponses(code) {
-  return function() {
+  return function(data) {
     if (!invokedHtaccess.call(
       this,
       code,
       "onerror",
-      null
+      data
     )) {
       commonResponses["Status-Code"] = code;
       commonResponses.Status = this.code(code);
@@ -685,6 +672,19 @@ function polpetta_header_define(type) {
 }
 
 var polpetta_header_cache = {};
+function polpetta_redirect(href, internally) {
+  if (internally) {
+    has(this, "url") ||
+    defineKnownProperty(this, "url", url.parse(href, true));
+  } else {
+    redirect.Location = href;
+    this.response.writeHead(
+      301, redirect
+    );
+    this.response.end();
+    return false;
+  }
+}
 // see polpetta_resolve
 function polpetta_resolve(src) {
   src = path.resolve(
@@ -715,7 +715,7 @@ function polpetta_type(type, def) {
 // local variables
 var
   // version
-  version = "0.2.4",
+  version = "0.2.5",
 
   // dependencies
   fs = require("fs"),
@@ -730,6 +730,8 @@ var
   keys = Object.keys,
   freeze = Object.freeze,
   defineProperty = Object.defineProperty,
+
+  stats = freeze(new fs.Stats),
 
   // internal objects
   redirect = {
@@ -1807,7 +1809,8 @@ function invokedHtaccess(
     event.polpetta = this;
     event.request = this.request;
     event.response = this.response;
-    event.file = this.path;
+    // file or path are alias, file might disappear
+    event.file = event.path = this.path;
     event.ext = this.ext;
     event.data = data;
     return htaccess[method](event) === false ||
@@ -1818,27 +1821,37 @@ function invokedHtaccess(
 }
 function Polpetta(request, response) {
 
+  var url = request.url;
+
   // immutable properties
   defineKnownProperty(this, "request", request);
   defineKnownProperty(this, "response", response);
-  defineKnownProperty(this, "url", url.parse(request.url, true));
 
-  pathname = this.url.pathname;
-  this.path = pathname == WEB_SEP ?
-    root :
-    polpetta_resolve(
-      decodeURIComponent(
-        pathname
+  if (!invokedHtaccess.call(
+    this,
+    0,
+    "onrequest",
+    url
+  )) {
+    polpetta_redirect.call(this, url, true);
+    pathname = this.url.pathname;
+    this.path = pathname == WEB_SEP ?
+      root :
+      polpetta_resolve(
+        decodeURIComponent(
+          pathname
+        )
       )
-    )
-  ;
+    ;
 
-  if (HIDDEN_FILE.test(pathname)) {
-    return forbidden.call(this);
+    if (HIDDEN_FILE.test(pathname)) {
+      return forbidden.call(this, stats);
+    }
+
+    // request.method switch helper
+    ResponseSwitch.call(this);
   }
 
-  // request.method switch helper
-  ResponseSwitch.call(this);
 }
 
 Polpetta.factory = function (request, response) {
@@ -1892,6 +1905,14 @@ Object.defineProperties(Polpetta.prototype, {
    *    // => {"content-type":"text/plain;charset=utf-8"}
    */
   header: defineKnownGetter("header", polpetta_header),
+
+  /**
+   * Redirect to a different page.
+   * @param   String    the new page to be redirected
+   * @example
+   *    polpetta.redirect("/folder/file.html");
+   */
+  redirect: defineKnownGetter("redirect", polpetta_redirect),
 
   /**
    * Returns a sanitized absolute path

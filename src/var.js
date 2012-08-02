@@ -2,7 +2,7 @@
 // local variables
 var
   // version
-  version = "0.2.4",
+  version = "0.2.5",
 
   // dependencies
   fs = require("fs"),
@@ -17,6 +17,8 @@ var
   keys = Object.keys,
   freeze = Object.freeze,
   defineProperty = Object.defineProperty,
+
+  stats = freeze(new fs.Stats),
 
   // internal objects
   redirect = {

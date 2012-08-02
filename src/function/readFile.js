@@ -5,7 +5,7 @@ function readFile(
   data
 ) {
   if (err) {
-    internalServerError.call(this);
+    internalServerError.call(this, err);
   } else if (!invokedHtaccess.call(
     this,
     200,

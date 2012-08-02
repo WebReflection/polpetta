@@ -8,26 +8,41 @@ ___________________________
 
 What Is Polpetta
 ----------------
-*polpetta* is a script able to initialize a [node.js](http://nodejs.org/) server in any folder you want
+*polpetta* is a script able to initialize a [node.js](http://nodejs.org/) server in any folder you want and behave like *CGI* or, if you prefer *PHP*, too.
 `node polpetta ~/path` is basically all you need to start surfing the `~/path` folder as if it is a web-server with the plus that any *file.njs* inside that folder will act as *node.js* module.
 Here [the most basic example of an *index.njs* file](https://github.com/WebReflection/polpetta/blob/master/test/index.njs).
 
 In few words, **polpetta is the easiest way for quick prototyping with both client files and node.js modules**.
 
 
-Platforms
----------
+How Is Polpetta Different From Python SimpleHTTPServer, serverdir, etc ...
+--------------------------------------------------------------------------
+The JavaScript weekly description couldn't be more precise
+
+  Runs up a Node-powered HTTP server in any folder you want whereupon '.njs' files get executed CGI-style.
+
+And this is almost it, except it finds automatically an available port if not specified, so you don't have to bother inventing numbers by your own, it allows interceptions on files via *.htaccess* like mechanism, and it `require("folder/file.njs")` to let you test modules for node.js in the possible easiest way ever, without writing from scratch again and again something able to run a web server.
+
+
+Can I Use Polpetta In Production ?
+----------------------------------
+You are using node.js which is not even at release 1.0 so I would say yes, you can :{D
+However, there are more mature projects such [Express](http://expressjs.com) probably with some hosting possibility.
+You can still test Express node.js modules in *polpetta* with a "*zero effort kick-in*" process: type *polpetta* in that folder and you are basically done.
+Moreover, *polpetta* can be a solution for embedded devices able to run node.js thanks to all possible techniques used to minimize creation of pointless objects, recycle as much as possible in a single thread, and a simplified behavior able to cover most of web cases.
+Last, but not least, I am willing to rent a server and use *polpetta* there so .. stay tuned :-)
+
+
+Does It Run This And That ?
+---------------------------
+*polpetta* runs everything available with **npm** with a secured mechanism that disable browsers from reading any **node_modules** folder present in your project tree (together with hidden files prefixed via a simple **.** dot).
+If you have written a node.js module, *polpetta* will be more than happy to let you use it, or test it, in a simple, and familiar, *onload* exported callback.
+
+
+Supported Platforms
+-------------------
 *polpetta* should just work wherever a recent version of node.js is available.
 Known platforms are **Linux**, **Mac**, and **Windows** where for latter one the *polpetta.cmd* file will simply start a polpetta server through double click.
-
-
-Oh Gosh ... Why
----------------
-I am maintaining different projects and I am sick of setting up a web-server per each project.
-You might have noticed that most **recent browsers do not let us test through the *file://* protocol anymore** and this is the most annoying thing ever for a developer, imho.
-You might be a *node.js* modules developer too and sometimes an easy way to test your modules is all you need.
-With *polpetta* you can create as many server as you want per each folder and test them without setting up a damn thing.
-Accordingly, if you develop anything for the web or the *node.js* community, *polpetta* could be exactly the solution to all your problems.
 
 
 Usage
@@ -138,15 +153,21 @@ As easy way to use it for generic http server response, you can `http.createServ
 
 What About .htaccess file
 -------------------------
-The *.htaccess* file is an experimental feature that lets you intercept few calls.
+The *.htaccess* file is a feature that lets you intercept few calls such *onrequest*, *onstaticfile*, and *onerror*.
 You can find a
 [.htaccess example here](https://github.com/WebReflection/polpetta/blob/master/test/weird folder/.htaccess).
-Implemented callbacks so far are *"onstaticfilerequest"*, used to serve in the example a markdown file already parsed, or an *"onerror"* callback to intercept problems and send back a nicer version of the error (404, 500, 403, etc ...)
+The .htaccess file works only if present in the root folder you chose for a polpetta instance. In all other folders this will be threaten as an hidden file rather than being parsed per each folder request. This simplifies and boost up **a lot** the server logic and is most likely everything you need. Here a summary of all current methods invoked, if present, with the .htaccess file.
+
+  * **onrequest**, performed *while polpetta is still backing*, you can use this event to create your own redirects, internals or external, or do any sort of crazy things you might think about.
+  * **onstaticfile**, performed once a non CGI/.njs file is going to be served. Here you can serve gzipped content or a completely different layout, accordingly with the file type.
+  * **onerror**, performed when something bad occurs. Usually, for bad we mean a forbidden 403, a not found 404, or an internal server error, with code 500. Here you can serve an alternative nice page, informing the user something went wrong or so something else, if you think it's necessary.
+
+Every time a callback is invoked, the [event object](https://github.com/WebReflection/polpetta/blob/master/src/htaccess/invokedHtaccess.js) will be sent. If you want to stop a default polpetta behavior, simply use `even.preventDefault()` or `return false` at some point in the callback. This works like DOM Level 3 or DOM 0 events ... as easy as that.
 
 
 Polpetta API
 ------------
-You can find almost everything documented in the [polpetta.js](https://github.com/WebReflection/polpetta/blob/master/src/Polpetta/prototype.js) file.
+You can find almost everything documented in the [prototype.js](https://github.com/WebReflection/polpetta/blob/master/src/Polpetta/prototype.js) file.
 Look closer and you will find a `polpetta.get(key[, default])` method, used to retrieve query string properties as it is for the PHP `$_GET[$key]` global, a `polpetta.post(key[, default])` method to retrieve posted data, a `polpetta.cookie(key[, default])` method, to get cookie, followed by `polpetta.cookie.set(key, value)` to set them.
 All these objects have a `obj.keys()` method too to retrieve all parsed keys for *get*, *post*, *cookie*, or *file*.
 
@@ -175,16 +196,6 @@ Bear in mind this is not a good technique to serve big files on the fly but that
     Hello Polpetta!
 
 
-TODOs
------
-  * pipe/stream files bigger than a predefined amount of MB (or just pipe them all)
-  * improve .htaccess like mechanism for the root folder as ..
-    * intercept requests instantly
-    * rewrite rules through JS regexp
-    * something else I am still thinking about ...
-  * add default favicon with polpetta logo (or maybe not ....)
-  * ... something else you can suggest me :-)
-
 License
 -------
 This *polpetta* project is under the Mit Style License
@@ -209,8 +220,26 @@ This *polpetta* project is under the Mit Style License
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
 
+
+TODOs
+-----
+  * pipe/stream files bigger than a predefined amount of MB (or just pipe them all)
+  * reach more coverage through [wru](https://github.com/WebReflection/wru) tests (integrated in the build system)
+  * add default favicon with polpetta logo (or maybe not ....)
+  * ... something else you can suggest me :-)
+
+
 Logo
 ----
 Polpetta means meatball and I am not a graphic designer at all ... so this is all I could do but if you want to create a better logo, you'll be credited and I'll pay you a beer, cheers :D
 
 ![logo](https://github.com/WebReflection/polpetta/raw/master/test/img/polpetta.png)
+
+
+Oh Gosh ... Why
+---------------
+I am maintaining different projects and I am sick of setting up a web-server per each project.
+You might have noticed that most **recent browsers do not let us test through the *file://* protocol anymore** and this is the most annoying thing ever for a developer, imho.
+You might be a *node.js* modules developer too and sometimes an easy way to test your modules is all you need.
+With *polpetta* you can create as many server as you want per each folder and test them without setting up a damn thing.
+Accordingly, if you develop anything for the web or the *node.js* community, *polpetta* could be exactly the solution to all your problems.

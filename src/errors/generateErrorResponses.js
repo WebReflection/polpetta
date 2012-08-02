@@ -2,12 +2,12 @@
 // returns common function to call
 // when shit happens
 function generateErrorResponses(code) {
-  return function() {
+  return function(data) {
     if (!invokedHtaccess.call(
       this,
       code,
       "onerror",
-      null
+      data
     )) {
       commonResponses["Status-Code"] = code;
       commonResponses.Status = this.code(code);

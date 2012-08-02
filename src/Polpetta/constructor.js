@@ -1,27 +1,37 @@
 
 function Polpetta(request, response) {
 
+  var url = request.url;
+
   // immutable properties
   defineKnownProperty(this, "request", request);
   defineKnownProperty(this, "response", response);
-  defineKnownProperty(this, "url", url.parse(request.url, true));
 
-  pathname = this.url.pathname;
-  this.path = pathname == WEB_SEP ?
-    root :
-    polpetta_resolve(
-      decodeURIComponent(
-        pathname
+  if (!invokedHtaccess.call(
+    this,
+    0,
+    "onrequest",
+    url
+  )) {
+    polpetta_redirect.call(this, url, true);
+    pathname = this.url.pathname;
+    this.path = pathname == WEB_SEP ?
+      root :
+      polpetta_resolve(
+        decodeURIComponent(
+          pathname
+        )
       )
-    )
-  ;
+    ;
 
-  if (HIDDEN_FILE.test(pathname)) {
-    return forbidden.call(this);
+    if (HIDDEN_FILE.test(pathname)) {
+      return forbidden.call(this, stats);
+    }
+
+    // request.method switch helper
+    ResponseSwitch.call(this);
   }
 
-  // request.method switch helper
-  ResponseSwitch.call(this);
 }
 
 Polpetta.factory = function (request, response) {

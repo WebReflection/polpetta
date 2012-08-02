@@ -11,7 +11,8 @@ function invokedHtaccess(
     event.polpetta = this;
     event.request = this.request;
     event.response = this.response;
-    event.file = this.path;
+    // file or path are alias, file might disappear
+    event.file = event.path = this.path;
     event.ext = this.ext;
     event.data = data;
     return htaccess[method](event) === false ||

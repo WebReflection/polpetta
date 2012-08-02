@@ -46,6 +46,14 @@ Object.defineProperties(Polpetta.prototype, {
   header: defineKnownGetter("header", polpetta_header),
 
   /**
+   * Redirect to a different page.
+   * @param   String    the new page to be redirected
+   * @example
+   *    polpetta.redirect("/folder/file.html");
+   */
+  redirect: defineKnownGetter("redirect", polpetta_redirect),
+
+  /**
    * Returns a sanitized absolute path
    * from a generic one, relative or absolute,
    * where if the folder root is not the

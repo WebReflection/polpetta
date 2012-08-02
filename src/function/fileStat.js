@@ -1,4 +1,6 @@
 
+// onrequest should be intercepted even before the filestat check
+// however, get, post, cookie, and file should be available already
 function fileStat(err, stats) {
   var
     notAnError = !err,
@@ -21,20 +23,15 @@ function fileStat(err, stats) {
       }
       break;
     case isDir:
-      tmp = this.url.pathname;
+      tmp = getCurrentPathName(this);
       if (tmp.slice(WEB_SEP_NEGATIVE_LENGTH) != WEB_SEP) {
-        redirect.Location = tmp + WEB_SEP;
-        this.response.writeHead(
-          301, redirect
-        );
-        return this.response.end();
+        return polpetta_redirect.call(this, tmp + WEB_SEP);
       }
       tmp = findHome(this.path + SEP);
       if (1 < (tmp.length - this.path.length)) {
         this.path = tmp;
         ext = assignExt.call(this);
         if (ext == ".njs") {
-          this.path = tmp;
           requireNJS.call(this);
         } else {
           fs.stat(
@@ -48,11 +45,11 @@ function fileStat(err, stats) {
           readDir.bind(this)
         );
       } else {
-        forbidden.call(this);
+        forbidden.call(this, stats);
       }
       break;
     default:
-      notFound.call(this);
+      notFound.call(this, stats);
       break;
   }
 }

@@ -1,13 +1,10 @@
 
 // used to show a directory content
 function readDir(err, files) {
-  var dirName = this.path;
   if (err) {
-    internalServerError.call(this);
+    internalServerError.call(this, err);
   } else {
-    dirName = WEB_SEP + webPath(
-      dirName.replace(root, "")
-    );
+    var dirName = getCurrentPathName(this);
     this.output.push(
       "<!doctype html>",
       "<html>",
