@@ -19,6 +19,8 @@ build: $(POLPETTA)
 	mkdir -p build
 	cat $(POLPETTA) >build/polpetta
 	chmod +x build/polpetta
+	node utility/setversion.js
+	node test/unit.njs
 	# cp -R node_modules build
 
 # clean/remove build folder
