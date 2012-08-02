@@ -1,7 +1,7 @@
 
 // simply returns the key if present
 function getValue(key, def) {
-  return this.hasOwnProperty(key) ?
+  return has(this, key) ?
     this[key] : def
   ;
 }

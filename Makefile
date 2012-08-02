@@ -4,10 +4,14 @@
 POLPETTA =  src/intro.js                      \
             src/config.js                     \
             src/function/*.js                 \
-            src/EXTENSION_TO_MIME.js          \
+            src/descriptor/*.js               \
+            src/errors/*.js                   \
+            src/polpetta_internals/*.js       \
             src/var.js                        \
-            src/polpetta.js                   \
-            src/htaccess.js                   \
+            src/EXTENSION_TO_MIME.js          \
+            src/htaccess/*.js                 \
+            src/Polpetta/constructor.js       \
+            src/Polpetta/prototype.js         \
             src/__init__.js
 
 # default build task
@@ -15,7 +19,7 @@ build: $(POLPETTA)
 	mkdir -p build
 	cat $(POLPETTA) >build/polpetta
 	chmod +x build/polpetta
-	cp -R node_modules build
+	# cp -R node_modules build
 
 # clean/remove build folder
 clean:

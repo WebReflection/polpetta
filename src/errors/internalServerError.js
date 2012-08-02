@@ -1,5 +1,5 @@
 
 // reused function for all Internal Server Errors
-var internalServerError = generateCommonResponses(
+var internalServerError = generateErrorResponses(
   500
 );

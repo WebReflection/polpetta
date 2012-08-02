@@ -3,14 +3,16 @@
 // this.output.push("What", "Ever");
 // this.output.flush(200, "html");
 function flushResponse(
-  polpetta,
-  response,
-  cookies,
   code,
   type,
   encode
 ) {
-  var length = this.length;
+  var
+    response = this.response,
+    cookies = this.cookie._,
+    output = this.output,
+    length = output.length
+  ;
   // output.flush("html");
   // output.flush(".html");
   // output.flush("text/html");
@@ -29,12 +31,12 @@ function flushResponse(
   if (typeof type == "string") {
     response.writeHead(
       code,
-      polpetta.header(
+      polpetta_header(
         type || "text/html"
       )
     );
   } else {
-    type || (type = polpetta.header(
+    type || (type = polpetta_header(
       "text/html"
     ));
     if (cookies.length) {
@@ -48,8 +50,8 @@ function flushResponse(
   // 304, 404, Not Found ... etc etc ...
   response.end(
     length ?
-      this.join("") :
-      polpetta.code(code),
+      output.join("") :
+      polpetta_code(code),
     encode || "utf-8"
   );
 }

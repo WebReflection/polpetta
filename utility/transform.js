@@ -28,10 +28,13 @@ for (key in structure) {
 }
 fs.writeFileSync(
   "src/EXTENSION_TO_MIME.js",
-  "\nconst EXTENSION_TO_MIME = " +
+  "\nconst EXTENSION_TO_MIME = freeze(" +
     JSON.stringify(EXTENSION_TO_MIME)
       .replace(/",(\w)/g, '"$1')
-      .replace(/,/g, ",\n") +
-  ";\n",
+      .replace(/,/g, ",\n")
+      .replace(/\{/, '{\n')
+      .replace(/\}$/, '\n}')
+      .replace(/^"/gm, '  "') +
+  ");\n",
   "utf-8"
 );

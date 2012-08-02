@@ -1,5 +1,5 @@
 
-function findRoot(args) {
+function polpetta_root(args) {
   // nothing has been specified or ...
   return (
     !args.length || (

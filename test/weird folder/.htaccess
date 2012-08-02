@@ -1,4 +1,5 @@
 // invoked when a static file is served
+// can be used to serve a different content
 this.onstaticfile = function (event) {
   var
     p = event.polpetta,
@@ -7,7 +8,7 @@ this.onstaticfile = function (event) {
   ;
   if (ext == ".md") {
     res.writeHead(
-      200, p.header("html")
+      event.status, p.header("html")
     );
     res.end(
       [ "<!doctype html>",
@@ -36,6 +37,25 @@ this.onstaticfile = function (event) {
   }
 };
 
+// invoked when something goes wrong (404, 500, etc)
+// can be used for personalized pages
+this.onerror = function (event) {
+  var
+    p = event.polpetta,
+    res = event.response
+  ;
+  res.writeHead(
+    event.status, p.header("txt")
+  );
+  res.end([
+    " file ",
+    "/", event.file.replace(
+      p.root, ""
+    ),
+    " problems"
+  ].join(""), "utf-8");
+};
+
 // invoked when a request is received
 // can be used for redirects and stuff
 this.onrequest = function (event) {
@@ -43,11 +63,6 @@ this.onrequest = function (event) {
 };
 
 
-// invoked when something goes wrong (404, 500, etc)
-// can be used for personalized pages
-this.onerror = function (event) {
-  // TODO
-};
 
 // from JS1K contest - http://webreflection.blogspot.ie/2012/02/js1k-markdown.html
 function markdown(f){/*!(C) WebReflection*/for(var b="</code></pre>",c="blockquote>",e="(?:\\r\\n|\\r|\\n|$)",d="(.+?)"+e,a=[],h=["&(?!#?[a-z0-9]+;)","&amp;","<","&lt;",">","&gt;","^(?:\\t| {4})"+d,function(i,j){return a.push(j+"\n")&&"\0"},"^"+d+"=+"+e,"<h1>$1</h1>\n","^"+d+"-+"+e,"<h2>$1</h2>\n","^(#+)\\s*"+d,function(i,l,k,j){return"<h"+(j=l.length)+">"+k.replace(/#+$/,"")+"</h"+j+">\n"},"(?:\\* \\* |- - |\\*\\*|--)[-*][-* ]*"+e,"<hr/>\n","  +"+e,"<br/>","^ *(\\* |\\+ |- |\\d+. )"+d,function(i,l,k,j){return"<"+(j=/^\d/.test(l)?"ol>":"ul>")+"<li>"+markdown(k)+"</li></"+j},"</(ul|ol)>\\s*<\\1>","","([_*]{1,2})([^\\2]+?)(\\1)",function(i,l,k,j){return"<"+(j=l.length==2?"strong>":"em>")+k+"</"+j},"\\[(.+?)\\]\\((.+?) (\"|')(.+?)(\\3)\\)",'<a href="$2" title="$4">$1</a>',"^&gt; "+d,function(i,j){return"<"+c+markdown(j)+"</"+c},"</"+c+"\\s*<"+c,"","(`{1,2})([^\\r\\n]+?)\\1","<code>$2</code>","\\0",function(i){return"<pre><code>"+a.shift()+b},b+"\\s*<pre><code>",""],g=0;g<h.length;){f=f.replace(RegExp(h[g++],"gm"),h[g++])}return f};

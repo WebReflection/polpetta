@@ -1,6 +1,9 @@
 
 // local variables
 var
+  // version
+  version = "0.2.4",
+
   // dependencies
   fs = require("fs"),
   http = require("http"),
@@ -12,22 +15,33 @@ var
 
   // from globals
   keys = Object.keys,
+  freeze = Object.freeze,
   defineProperty = Object.defineProperty,
 
   // internal objects
-  polpetta = {},
   redirect = {
     Location: null
   },
+  commonDescriptor = {
+    enumerable: true,
+    writable: false,
+    configurable: false,
+    value: null
+  },
   commonResponses = {
     Connection: "close",
-    Status: ""
+    Status: "",
+    "Status-Code": 0
   },
-  event = defineImmutableProperties({}, {
-    preventDefault: function () {
-      event.defaultPrevented = true;
-    }
-  }),
+  event = defineNotConfigurableProperty(
+    defineKnownProperty(
+      {}, "preventDefault", function () {
+        event.defaultPrevented = true;
+      }
+    ),
+    "defaultPrevented",
+    false
+  ),
   arguments = process.argv.filter(function (value) {
     return this.found ?
       value :
@@ -44,17 +58,28 @@ var
   SEP = path.sep,
   WEB_SEP = "/",
   WEB_SEP_NEGATIVE_LENGTH = -WEB_SEP.length,
-  HEADERS = {},
   TMP = env.TMP || env.TMPDIR || env.TEMP || CWD,
   port =  HOST_USER_PORT ||
           HOST_INITIAL_PORT,
+  root = polpetta_root(arguments),
+
+  // RegExp constants
+  BOUNDARY_MATCH = /boundary=([^;]+)/,
+  PATH_SLASHES = /(\\|\/)/g,
+  HIDDEN_FILE = /(?:^|\/)\.[^/]*|(?:^|\/)node_modules\/?$/,
+
+  // placeholder for post and file property
+  emptyGetter = withKeysMethod(
+    getValue,
+    {}
+  ),
 
   // common/reused variables
-  polpettaKeys,
   server,
   systemPath, webPath,
   htaccess,
-  htaccessPath
+  htaccessPath,
+  postedData
 ;
 
 if (SEP == WEB_SEP) {

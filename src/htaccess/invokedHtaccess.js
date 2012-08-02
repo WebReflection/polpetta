@@ -1,21 +1,18 @@
 
 function invokedHtaccess(
+  code,
   method,
-  polpetta,
-  request,
-  response,
-  file,
-  ext,
   data
 ) {
-  if (htaccess) {
+  if (htaccess && method in htaccess) {
     event.defaultPrevented = false;
+    event.status = code;
     event.type = method.slice(2);
-    event.polpetta = polpetta;
-    event.request = request;
-    event.response = response;
-    event.file = file;
-    event.ext = ext;
+    event.polpetta = this;
+    event.request = this.request;
+    event.response = this.response;
+    event.file = this.path;
+    event.ext = this.ext;
     event.data = data;
     return htaccess[method](event) === false ||
       event.defaultPrevented === true

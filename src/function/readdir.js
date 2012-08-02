@@ -1,28 +1,18 @@
 
 // used to show a directory content
-function readDir(
-  polpetta,
-  response,
-  dirName,
-  err,
-  files
-) {
-  var output = this;
+function readDir(err, files) {
+  var dirName = this.path;
   if (err) {
-    internalServerError(
-      output,
-      polpetta,
-      response
-    );
+    internalServerError.call(this);
   } else {
     dirName = WEB_SEP + webPath(
-      dirName.replace(polpetta.root, "")
+      dirName.replace(root, "")
     );
-    output.push(
+    this.output.push(
       "<!doctype html>",
       "<html>",
         "<head>",
-          "<title>", dirName, "</title>",
+          "<title>Index of ", dirName, "</title>",
           '<meta name="viewport" content="',
             'width=device-width,',
             'initial-scale=1.0,',
@@ -32,34 +22,26 @@ function readDir(
           '<meta name="generator" content="polpetta" />',
         "</head>",
         "<body>",
-          "<strong>Files found in " + dirName + "</strong>",
+          "<strong>Index of " + dirName + "</strong>",
           "<ul>"
     );
-    if (dirName != "/") {
-      output.push(
+    if (dirName != WEB_SEP) {
+      this.output.push(
         '<li><a href="..">..</a></li>'
       );
     }
-    output.dirName = dirName;
-    files.forEach(readDir.forEach, output);
-    output.push(
+    files.forEach(readDir.forEach, this.output);
+    this.output.push(
           "</ul>",
         "</body>",
       "</html>"
     );
-    response.writeHead(
-      200,
-      polpetta.header("html")
-    );
-    response.end(
-      output.join(""),
-      "utf-8"
-    );
+    this.output.flush(200, "text/html", "utf-8");
   }
 }
 
 readDir.forEach = function (name) {
-  if (name != HTACCESS_NAME) {
+  if (!HIDDEN_FILE.test(name)) {
     this.push(
       '<li><a href="' + name + '">' + name + '</a></li>'
     );

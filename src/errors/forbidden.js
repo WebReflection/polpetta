@@ -1,5 +1,5 @@
 
 // reused function for all Not Founds
-var forbidden = generateCommonResponses(
+var forbidden = generateErrorResponses(
   403
 );

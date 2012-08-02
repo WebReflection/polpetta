@@ -100,7 +100,7 @@ Make options
 
 What About .njs Files
 ---------------------
-If the file extension is **.njs** it is **executed PHP style** but with the whole power of node.js.
+If the file extension is **.njs** it is **executed CGI (or PHP) style** but with the whole power of node.js.
 You can `require("module")` and do what you want and you receive per each web-server call the **request** and the **response** object.
 All you have to do in your file is to export an `onload` function. This function will be called with a spiced up *polpetta* with some utility but you don't really have to use them, just do what you want.
 
@@ -123,17 +123,31 @@ All you have to do in your file is to export an `onload` function. This function
 What About External npm Modules
 -------------------------------
 There are two options here, the easy one and the even easier.
-The easy one is about cloning the repository, perform `npm install mymodule` inside the repository, use *make* and discover that **modules are also included in the *build/* folder**.
-Since that is gonna be the folder where the application is running in any case, modules are resolved through `require()` via that folder.
-If you want to keep updated the globally executable *polpetta*, you might decide to add this line to the *Makefile* build process: `cp -R build/* /usr/local/bin`
+The easy one is about putting your modules in a folder called **node_modules** inside your project.
+This folder is forbidden by default so nobody can read it through the url but you can `require(module)` without problems.
 
 The even easier way is to install your most used modules globally via `npm install module -g` so that these will be available in any case through the node.js `require()` mechanism and you update one place rather than all of them, if necessary.
 
 
+What About Polpetta as Module
+-----------------------------
+If you `require("./polpetta")` file you gonna have a module with a *Polpetta* constructor.
+Any time you want to initialize a Polpetta instance you can `new Polpetta(request, response)`.
+As easy way to use it for generic http server response, you can `http.createServer(Polpetta.factory);`
+
+
+What About .htaccess file
+-------------------------
+The *.htaccess* file is an experimental feature that lets you intercept few calls.
+You can find a
+[.htaccess example here](https://github.com/WebReflection/polpetta/blob/master/test/weird folder/.htaccess).
+Implemented callbacks so far are *"onstaticfilerequest"*, used to serve in the example a markdown file already parsed, or an *"onerror"* callback to intercept problems and send back a nicer version of the error (404, 500, 403, etc ...)
+
+
 Polpetta API
 ------------
-You can find almost everything documented in the [polpetta.js](https://github.com/WebReflection/polpetta/blob/master/src/polpetta.js) file.
-What you won't find there is a `polpetta.get(key[, default])` method, used to retrieve query string properties as it is for the PHP `$_GET[$key]` global, a `polpetta.post(key[, default])` method to retrieve posted data, a `polpetta.cookie(key[, default])` method, to get cookie, followed by `polpetta.cookie.set(key, value)` to set them.
+You can find almost everything documented in the [polpetta.js](https://github.com/WebReflection/polpetta/blob/master/src/Polpetta/prototype.js) file.
+Look closer and you will find a `polpetta.get(key[, default])` method, used to retrieve query string properties as it is for the PHP `$_GET[$key]` global, a `polpetta.post(key[, default])` method to retrieve posted data, a `polpetta.cookie(key[, default])` method, to get cookie, followed by `polpetta.cookie.set(key, value)` to set them.
 All these objects have a `obj.keys()` method too to retrieve all parsed keys for *get*, *post*, *cookie*, or *file*.
 
 You can see an examples for [cookie](https://github.com/WebReflection/polpetta/blob/master/test/cookie.njs), [get or post](https://github.com/WebReflection/polpetta/blob/master/test/post.njs), and [files upload](https://github.com/WebReflection/polpetta/blob/master/test/file.njs) in the test folder.
@@ -163,15 +177,13 @@ Bear in mind this is not a good technique to serve big files on the fly but that
 
 TODOs
 -----
-  * add .htaccess like mechanism for the root folder as ..
-    * hidden file from any folder request ( no ajax, images, etc ... )
-    * one shot requiring during initialization and as node module
-    * possibility to intercept 404, 500, and all others
-    * possibility to serve different content per extension ... e.g. .md files
+  * pipe/stream files bigger than a predefined amount of MB (or just pipe them all)
+  * improve .htaccess like mechanism for the root folder as ..
+    * intercept requests instantly
     * rewrite rules through JS regexp
     * something else I am still thinking about ...
-  * add default favicon with polpetta logo
-  * I believe after that there's not much left, except creating automation tests through phantom js and wru
+  * add default favicon with polpetta logo (or maybe not ....)
+  * ... something else you can suggest me :-)
 
 License
 -------

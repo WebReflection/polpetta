@@ -12,5 +12,5 @@ function setCookie(name, value, exp, path, domain, secure) {
   	path && c.push("path=" + path);
   	domain && c.push("domain=" + domain);
   	secure && c.push("secure");
-		return c.join(';');
+		this.push(c.join(';'));
 }

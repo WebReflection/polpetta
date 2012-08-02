@@ -15,8 +15,8 @@ serverListen.connect = function () {
       "#",
       "(က)",
       "polpetta",
-      "v" + polpetta.version,
-      polpetta.root
+      "v" + version,
+      root
     ].join(" "));
   }
 };
@@ -33,7 +33,6 @@ serverListen.error = function () {
       "======================================================="
     ].join("\n"));
   } else {
-    ++port;
-    process.nextTick(serverListen);
+    serverListen(++port);
   }
 };

@@ -9,12 +9,14 @@ function serveNJS(
   query
 ) {
   var files, posted;
-  if (request.method == "POST") {
-    files = output.file;
+  if (this.request.method == "POST") {
+    /*
+    files = this.output.file;
     posted = querystring.parse(
       output.join("")
     );
     output = [];
+    */
   }
   requireNJS(
     file,

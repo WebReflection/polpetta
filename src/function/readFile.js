@@ -1,33 +1,22 @@
 
 // once the file has been read ...
 function readFile(
-  polpetta,
-  response,
-  file,
-  ext,
-  mode,
   err,
   data
 ) {
   if (err) {
-    internalServerError(
-      this,
-      polpetta,
-      response
-    );
-  } else if (!invokedHtaccess(
+    internalServerError.call(this);
+  } else if (!invokedHtaccess.call(
+    this,
+    200,
     "onstaticfile",
-    polpetta,
-    null,
-    response,
-    file,
-    ext,
     data
   )) {
-    response.writeHead(
-      200,
-      polpetta.header(ext)
+    this.response.writeHead(
+      200, this.header(this.ext)
     );
-    response.end(data, mode);
+    this.response.end(
+      data, polpetta_encoding(this.ext)
+    );
   }
 }

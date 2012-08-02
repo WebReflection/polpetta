@@ -1,5 +1,5 @@
 
 // reused function for all Not Founds
-var notFound = generateCommonResponses(
+var notFound = generateErrorResponses(
   404
 );
