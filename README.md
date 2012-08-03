@@ -135,9 +135,8 @@ All you have to do in your file is to export an `onload` function. This function
       fs.writeFileSync("gotcha.txt", "it works");
       response.end();
       // note that polpetta here points
-      // to a polpetta clone enriched
-      // with some utility
-      // and an output object
+      // to a new polpetta instance
+      // per each request lifecycle
     };
 
 
