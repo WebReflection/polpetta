@@ -29,8 +29,10 @@ And this is almost it, except it finds automatically an available port if not sp
 Can I Use Polpetta In Production ?
 ----------------------------------
 You are using node.js which is not even at release 1.0 so I would say yes, you can :{D
+
 However, there are more mature projects such [Express](http://expressjs.com) probably with some hosting possibility.
 You can still test Express node.js modules in *polpetta* with a "*zero effort kick-in*" process: type *polpetta* in that folder and you are basically done.
+
 Moreover, *polpetta* can be a solution for embedded devices able to run node.js thanks to all possible techniques used to minimize creation of pointless objects, recycle as much as possible in a single thread, and a simplified behavior able to cover most of web cases.
 Last, but not least, I am willing to rent a server and use *polpetta* there so .. stay tuned :-)
 
