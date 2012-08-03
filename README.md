@@ -15,8 +15,8 @@ Here [the most basic example of an *index.njs* file](https://github.com/WebRefle
 In few words, **polpetta is the easiest way for quick prototyping with both client files and node.js modules**.
 
 
-How Is Polpetta Different From Python SimpleHTTPServer, serverdir, etc ...
---------------------------------------------------------------------------
+How Is Polpetta Different From Python SimpleHTTPServer, serverdir, etc
+----------------------------------------------------------------------
 The JavaScript weekly description couldn't be more precise
 
 
