@@ -8,7 +8,9 @@ ___________________________
 
 What Is Polpetta
 ----------------
-*polpetta* is a script able to initialize a [node.js](http://nodejs.org/) server in any folder you want and behave like *CGI* or, if you prefer *PHP*, too.
+*polpetta* is a script able to initialize a [node.js](http://nodejs.org/) server in any folder you want and behave like *CGI* or, if you prefer *PHP*, too, in order to have not only static files serving but dynamic content as well.
+
+
 `node polpetta ~/path` is basically all you need to start surfing the `~/path` folder as if it is a web-server with the plus that any *file.njs* inside that folder will act as *node.js* module.
 Here [the most basic example of an *index.njs* file](https://github.com/WebReflection/polpetta/blob/master/test/index.njs).
 
