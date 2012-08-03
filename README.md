@@ -109,7 +109,7 @@ You should see something like this in your console (I have used the /tmp folder 
 
     # and you are ready to go
 
-If you want clone this repository, help me improving *polpetta* or do some test/change, remember to `make` in order to build *polpetta* in the build folder then `node build/polpetta ../test` or any other path you like.
+If you want clone this repository, help me improving *polpetta* or do some test/change, remember to `make` in order to build *polpetta* in the build folder then `node build/polpetta test` or any other path you like.
 
 
 Make options
