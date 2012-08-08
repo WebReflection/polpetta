@@ -14,6 +14,8 @@ function fileStat(err, stats) {
       ext = assignExt.call(this);
       if (ext == ".njs") {
         requireNJS.call(this);
+      } else if (STREAM_FILES_BIGGER_THAN < stats.size) {
+        streamFile.call(this, stats);
       } else {
         fs.readFile(
           this.path,

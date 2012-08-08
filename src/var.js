@@ -2,7 +2,7 @@
 // local variables
 var
   // version
-  version = "0.2.5",
+  version = "0.2.6",
 
   // dependencies
   fs = require("fs"),
@@ -35,6 +35,11 @@ var
     Status: "",
     "Status-Code": 0
   },
+  commonStream = {
+    "Content-Type": "",
+    "Content-Length": 0
+  },
+  emptyObjet = {},
   event = defineNotConfigurableProperty(
     defineKnownProperty(
       {}, "preventDefault", function () {

@@ -20,8 +20,9 @@ build: $(POLPETTA)
 	cat $(POLPETTA) >build/polpetta
 	chmod +x build/polpetta
 	node utility/setversion.js
+	cat src/chef.js >build/chef
+	chmod +x build/chef
 	node test/unit.njs
-	# cp -R node_modules build
 
 # clean/remove build folder
 clean:

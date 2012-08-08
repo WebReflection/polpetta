@@ -16,18 +16,23 @@
 // constants as configuration
 const
 
+  LIST_FILES_AND_FOLDERS = true,  // display the list of files
+                                  // if no index.njs, index.html or htm is found
+
+  STREAM_FILES_BIGGER_THAN = 1024 * 512,
+                                  // 0 to always stream files
+                                  // N as amount of bytes
+
+
   HOST_NAME = process.env.IP || "localhost",
-                                // choose a name for your server
+                                  // default host name
 
   HOST_INITIAL_PORT = process.env.PORT || 1337,
-                                // choose a port to start with
-                                // this is for automatic port recognition
-                                // if argument [port] is not provided
+                                  // choose a port to start with
+                                  // this is for automatic port recognition
+                                  // if argument [port] is not provided
 
-  LIST_FILES_AND_FOLDERS = true,// display the list of files
-                                // if no index.njs or index.html is found
-
-  HTACCESS_NAME = ".htaccess"   // experimental .htaccess name
+  HTACCESS_NAME = ".htaccess"     // experimental .htaccess name
 ;
 
 // after this point, if you don't know what you are doing .. please DON'T !!!
@@ -229,6 +234,8 @@ function fileStat(err, stats) {
       ext = assignExt.call(this);
       if (ext == ".njs") {
         requireNJS.call(this);
+      } else if (STREAM_FILES_BIGGER_THAN < stats.size) {
+        streamFile.call(this, stats);
       } else {
         fs.readFile(
           this.path,
@@ -351,12 +358,9 @@ function fsStat() {
 }
 function getCurrentPathName(polpetta) {
   var
-    dirName = polpetta.path,
+    dirName = polpetta.url.pathname,
     request_url = polpetta.request.url
   ;
-  dirName = WEB_SEP + webPath(
-    dirName.replace(root, "")
-  );
   // dirName should be at the root, right?
   // so if indexOf is 0 then is not
   return request_url.indexOf(dirName) ?
@@ -410,7 +414,9 @@ function readDir(err, files) {
   if (err) {
     internalServerError.call(this, err);
   } else {
-    var dirName = getCurrentPathName(this);
+    var dirName = decodeURIComponent(
+      getCurrentPathName(this)
+    );
     this.output.push(
       "<!doctype html>",
       "<html>",
@@ -550,6 +556,23 @@ function setCookie(name, value, exp, path, domain, secure) {
   	domain && c.push("domain=" + domain);
   	secure && c.push("secure");
 		this.push(c.join(';'));
+}
+
+// once the file has been read ...
+function streamFile(stats) {
+  if (!invokedHtaccess.call(
+    this,
+    200,
+    "onstreamfile",
+    stats
+  )) {
+    var stream = fs.createReadStream(this.path, emptyObjet);
+    commonStream["Content-Type"] = polpetta_type(this.ext);
+    commonStream["Content-Length"] = stats.size;
+    this.response.writeHead(200, commonStream);
+    stream.on("error", internalServerError.bind(this));
+    stream.pipe(this.response);
+  }
 }
 
 function withKeysMethod(callback, obj) {
@@ -715,7 +738,7 @@ function polpetta_type(type, def) {
 // local variables
 var
   // version
-  version = "0.2.5",
+  version = "0.2.6",
 
   // dependencies
   fs = require("fs"),
@@ -748,6 +771,11 @@ var
     Status: "",
     "Status-Code": 0
   },
+  commonStream = {
+    "Content-Type": "",
+    "Content-Length": 0
+  },
+  emptyObjet = {},
   event = defineNotConfigurableProperty(
     defineKnownProperty(
       {}, "preventDefault", function () {

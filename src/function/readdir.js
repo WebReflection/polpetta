@@ -4,7 +4,9 @@ function readDir(err, files) {
   if (err) {
     internalServerError.call(this, err);
   } else {
-    var dirName = getCurrentPathName(this);
+    var dirName = decodeURIComponent(
+      getCurrentPathName(this)
+    );
     this.output.push(
       "<!doctype html>",
       "<html>",
