@@ -2,7 +2,7 @@
 // local variables
 var
   // version
-  version = "0.2.6",
+  version = "0.2.7",
 
   // dependencies
   fs = require("fs"),
@@ -49,19 +49,11 @@ var
     "defaultPrevented",
     false
   ),
-  arguments = process.argv.filter(function (value) {
-    return this.found ?
-      value :
-      this.found = ~value.indexOf("polpetta")
-    ;
-  }, {}).slice(1),
+  arguments = resolveArguments(process.argv),
 
   // internal constants
   CWD = process.cwd(),
-  HOST_USER_PORT = (/^(\d+)$/.test(arguments[0]) ||
-                   /^(\d+)$/.test(arguments[1])) &&
-                   RegExp.$1
-  ,
+  HOST_USER_PORT = findPort(arguments),
   SEP = path.sep,
   WEB_SEP = "/",
   WEB_SEP_NEGATIVE_LENGTH = -WEB_SEP.length,

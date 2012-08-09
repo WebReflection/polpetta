@@ -10,46 +10,47 @@
  * ---------------------------------------------------------
  * Chef is a non-blocking way to bake one or more polpetta
  * in different folders and different ports at once, e.g.
- *  chef start path [port]
- *  chef stop path [port]
+ *  chef start [polpetta|serverdir] [path] [port]
+ *  chef stop [polpetta|serverdir] [path] [port]
  */
 
 var
+  keys = Object.keys,
   env = process.env,
   fs = require("fs"),
   path = require("path"),
   spawn = require('child_process').spawn,
-  args = process.argv.filter(function (value) {
-    return this.found ?
-      value :
-      this.found = ~value.indexOf("chef")
-    ;
-  }, {}).slice(1),
+  args = resolveArguments(process.argv),
   dbName = path.join(env.HOME, ".chef"),
-  create = fs.existsSync(dbName) || fs.writeFileSync(dbName, "{}", "utf-8"),
-  dbStringified = fs.readFileSync(dbName, "utf-8"),
-  db = JSON.parse(dbStringified),
-  folder = args[1] ? path.resolve(args[1]) : "",
-  port = args[2] || "*",
-  domain,
-  child
+  program = /^polpetta|serverdir$/.test(args[1]) ?
+    RegExp["$&"] : args.splice(1, 0, "polpetta") && args[1]
+  ,
+  port = findPort(args.slice(2)) || "",
+  filteredFolder = args.filter(function (folder, i) {
+    return 1 < i && folder != port;
+  })[0],
+  folder = path.resolve(filteredFolder || process.cwd()),
+  dbStringified, db,
+  nmsp, domain, child
 ;
 
 function perform(magic) {
-  domain = db[folder] || (db[folder] = {});
+  domain = nmsp[folder] || (nmsp[folder] = {});
   switch (magic) {
     case "stop":
-      if (folder) {
-        port != "*" ?
+      if (filteredFolder) {
+        port ?
           (port in domain) && kill(port) :
-          Object.keys(domain).forEach(kill)
+          keys(domain).forEach(kill)
         ;
       } else {
-        Object.keys(db).forEach(function ($folder) {
-          domain = db[folder = $folder];
-          Object.keys(domain).forEach(kill);
+        keys(nmsp).forEach(function ($folder) {
+          domain = nmsp[folder = $folder];
+          keys(domain).forEach(kill);
         });
       }
+      keys(nmsp).forEach(clean);
+      save();
       break;
     case "start":
       if (folder) {
@@ -60,15 +61,15 @@ function perform(magic) {
             domain[RegExp.$1] = child.pid;
           }
           this.close();
-          fs.writeFileSync(dbName, JSON.stringify(db), "utf-8");
+          save();
         });
-        port != "*" && perform("stop");
+        port && perform("stop");
         child = spawn(
-          "node", [path.join(__dirname, "polpetta")].concat(args.slice(1)), {
+          "node", [path.join(__dirname, program)].concat(args.slice(2)), {
           detached: true,
           stdio: ["ignore", fs.openSync(dbName, 'a'), "ignore"]
         });
-        if (port != "*") {
+        if (port) {
           domain[port] = child.pid;
         }
         child.unref();
@@ -76,8 +77,8 @@ function perform(magic) {
       }
     default:
       console.log([
-        "chef start path [port]",
-        "chef stop path [port]"
+        "chef start [polpetta|serverdir] [path] [port]",
+        "chef stop [polpetta|serverdir] [path] [port]"
       ].join("\n"));
       break;
   }
@@ -95,4 +96,46 @@ function kill(port) {
   }
 }
 
+function clean(key) {
+  if (!keys(nmsp[key]).length) {
+    delete nmsp[key];
+  }
+}
+
+function save() {
+  fs.writeFileSync(
+    dbName, dbStringified = JSON.stringify(db), "utf-8"
+  );
+}
+
+if (fs.existsSync(dbName)) {
+  dbStringified = fs.readFileSync(dbName, "utf-8");
+  try {
+    db = JSON.parse(dbStringified);
+  } catch(o_O) {
+    console.warn("ooops, the chef burned something!");
+    console.warn(dbStringified);
+  }
+}
+
+db || save(db = {});
+nmsp = db[program] || (db[program] = {});
+
 perform(args[0]);
+
+// handy function to have only real arguments
+// works with env directive or through node ~/program.js
+function resolveArguments(args, keepProgramName) {
+  // do not modify original argument
+  var a = [].slice.call(args, 0);
+  // remove first argument if it's node
+  if (/(?:^|\/|\\)node(?:\.exe)?$/.test(a[0])) a.shift();
+  // remove program itself
+  keepProgramName || a.shift();
+  return a;
+}
+function findPort(args) {
+  return (/^(\d+)$/.test(args[0]) ||
+          /^(\d+)$/.test(args[1])) &&
+          RegExp.$1;
+}

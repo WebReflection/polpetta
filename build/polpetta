@@ -294,6 +294,11 @@ findHome.filter = function (main) {
   );
 };
 
+function findPort(args) {
+  return (/^(\d+)$/.test(args[0]) ||
+          /^(\d+)$/.test(args[1])) &&
+          RegExp.$1;
+}
 // when stuff is done, flush the output
 // this.output.push("What", "Ever");
 // this.output.flush(200, "html");
@@ -479,15 +484,6 @@ function readFile(
   }
 }
 
-function request_goes_on(polpetta, stats) {
-  return !invokedHtaccess.call(
-    polpetta,
-    200,
-    "onrequest",
-    stats
-  );
-}
-
 // used to require .njs files
 function requireNJS() {
   try {
@@ -504,6 +500,17 @@ function requireNJS() {
   );
 }
 
+// handy function to have only real arguments
+// works with env directive or through node ~/program.js
+function resolveArguments(args, keepProgramName) {
+  // do not modify original argument
+  var a = [].slice.call(args, 0);
+  // remove first argument if it's node
+  if (/(?:^|\/|\\)node(?:\.exe)?$/.test(a[0])) a.shift();
+  // remove program itself
+  keepProgramName || a.shift();
+  return a;
+}
 // function used to perform very first connection
 function serverListen() {
   server.listen(port, HOST_NAME, serverListen.connect);
@@ -738,7 +745,7 @@ function polpetta_type(type, def) {
 // local variables
 var
   // version
-  version = "0.2.6",
+  version = "0.2.7",
 
   // dependencies
   fs = require("fs"),
@@ -785,19 +792,11 @@ var
     "defaultPrevented",
     false
   ),
-  arguments = process.argv.filter(function (value) {
-    return this.found ?
-      value :
-      this.found = ~value.indexOf("polpetta")
-    ;
-  }, {}).slice(1),
+  arguments = resolveArguments(process.argv),
 
   // internal constants
   CWD = process.cwd(),
-  HOST_USER_PORT = (/^(\d+)$/.test(arguments[0]) ||
-                   /^(\d+)$/.test(arguments[1])) &&
-                   RegExp.$1
-  ,
+  HOST_USER_PORT = findPort(arguments),
   SEP = path.sep,
   WEB_SEP = "/",
   WEB_SEP_NEGATIVE_LENGTH = -WEB_SEP.length,
