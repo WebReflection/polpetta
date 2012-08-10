@@ -2,7 +2,7 @@
 // local variables
 var
   // version
-  version = "0.2.7",
+  version = "0.3.3",
 
   // dependencies
   fs = require("fs"),

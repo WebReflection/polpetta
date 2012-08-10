@@ -10,8 +10,7 @@
  * ---------------------------------------------------------
  * Chef is a non-blocking way to bake one or more polpetta
  * in different folders and different ports at once, e.g.
- *  chef start [polpetta|serverdir] [path] [port]
- *  chef stop [polpetta|serverdir] [path] [port]
+ *  chef [start|stop] [polpetta|serverdir] [path] [port]
  */
 
 var
@@ -38,50 +37,48 @@ function perform(magic) {
   domain = nmsp[folder] || (nmsp[folder] = {});
   switch (magic) {
     case "stop":
+    case "burn":
       if (filteredFolder) {
         port ?
-          (port in domain) && kill(port) :
+          kill(port) :
           keys(domain).forEach(kill)
         ;
       } else {
         keys(nmsp).forEach(function ($folder) {
           domain = nmsp[folder = $folder];
-          keys(domain).forEach(kill);
+          (port ?
+            keys(domain).filter(byPort) :
+            keys(domain)
+          ).forEach(kill);
         });
       }
       keys(nmsp).forEach(clean);
       save();
       break;
     case "start":
-      if (folder) {
-        fs.watch(dbName).on("change", function () {
-          var out = fs.readFileSync(dbName, "utf-8").replace(dbStringified, "");
-          console.log(out);
-          if (/:\/\/[^:]+:(\d+)\//.test(out.split(/\r\n|\r|\n/)[0])) {
-            domain[RegExp.$1] = child.pid;
-          }
-          this.close();
-          save();
-        });
-        port && perform("stop");
-        child = spawn(
-          "node", [path.join(__dirname, program)].concat(args.slice(2)), {
-          detached: true,
-          stdio: ["ignore", fs.openSync(dbName, 'a'), "ignore"]
-        });
-        if (port) {
-          domain[port] = child.pid;
-        }
-        child.unref();
-        break;
-      }
+    case "cook":
+      port && filteredFolder && kill(port);
+      child = spawn(
+        "node", [path.join(__dirname, program)].concat(args.slice(2)), {
+        detached: true,
+        stdio: ["ignore", fs.openSync(dbName, "a"), "ignore"]
+      });
+      port && (domain[port] = child.pid);
+      child.unref();
+      // watch is not stable yet in Windows
+      // here a manual, greedy, watch replacement
+      process.nextTick(watchReplacer);
+      break;
     default:
       console.log([
-        "chef start [polpetta|serverdir] [path] [port]",
-        "chef stop [polpetta|serverdir] [path] [port]"
+        "chef [start|stop] [polpetta|serverdir] [path] [port]"
       ].join("\n"));
       break;
   }
+}
+
+function byPort(key) {
+  return key === port;
 }
 
 function kill(port) {
@@ -106,6 +103,20 @@ function save() {
   fs.writeFileSync(
     dbName, dbStringified = JSON.stringify(db), "utf-8"
   );
+}
+
+function watchReplacer() {
+  var out = fs.readFileSync(dbName, "utf-8");
+  if (out !== dbStringified) {
+    out = out.replace(dbStringified, "");
+    console.log(out);
+    if (/:\/\/[^:]+:(\d+)\//.test(out.split(/\r\n|\r|\n/)[0])) {
+      domain[RegExp.$1] = child.pid;
+    }
+    save();
+  } else {
+    process.nextTick(watchReplacer);
+  }
 }
 
 if (fs.existsSync(dbName)) {

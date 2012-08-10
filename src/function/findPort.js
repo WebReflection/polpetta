@@ -1,6 +1,6 @@
 
 function findPort(args) {
-  return (/^(\d+)$/.test(args[0]) ||
-          /^(\d+)$/.test(args[1])) &&
+  return (/^(\d+)$/.test(args[1]) ||
+          /^(\d+)$/.test(args[0])) &&
           RegExp.$1;
 }
