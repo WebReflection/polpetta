@@ -1,4 +1,6 @@
 
 function assignExt() {
-  return this.ext = path.extname(this.path);
+  return defineNotConfigurableProperty(
+    this, "ext", path.extname(this.path)
+  ).ext;
 }

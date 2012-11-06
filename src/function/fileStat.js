@@ -31,7 +31,7 @@ function fileStat(err, stats) {
       }
       tmp = findHome(this.path + SEP);
       if (1 < (tmp.length - this.path.length)) {
-        this.path = tmp;
+        defineNotConfigurableProperty(this, "path", tmp);
         ext = assignExt.call(this);
         if (ext == ".njs") {
           requireNJS.call(this);

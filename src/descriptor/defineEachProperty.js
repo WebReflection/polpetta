@@ -1,4 +1,3 @@
-
 function defineEachProperty(key) {
-  defineProperty(this, key, commonDescriptor);
+    defineProperty(this, key, commonDescriptor);
 }

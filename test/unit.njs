@@ -128,7 +128,6 @@ var
 ;
 
 global.wru = wru;
-
 if (!module.parent) {
   wru.random = true;
   onload(request, response, new Polpetta(request, response), extras);

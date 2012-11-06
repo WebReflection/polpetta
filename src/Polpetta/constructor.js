@@ -15,14 +15,16 @@ function Polpetta(request, response) {
   )) {
     polpetta_redirect.call(this, url, true);
     pathname = this.url.pathname;
-    this.path = pathname == WEB_SEP ?
-      root :
-      polpetta_resolve(
-        decodeURIComponent(
-          pathname
+    defineNotConfigurableProperty(
+      this, "path",
+      pathname == WEB_SEP ?
+        root :
+        polpetta_resolve(
+          decodeURIComponent(
+            pathname
+          )
         )
-      )
-    ;
+    );
 
     if (HIDDEN_FILE.test(pathname)) {
       return forbidden.call(this, stats);

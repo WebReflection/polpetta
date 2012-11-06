@@ -78,14 +78,25 @@ function ResponseSwitch() {
       break;
   }
 }
+
 function addPathSlashes(path) {
   return path.replace(
     PATH_SLASHES, "\\$1"
   );
 }
+
 function assignExt() {
-  return this.ext = path.extname(this.path);
+  return defineNotConfigurableProperty(
+    this, "ext", path.extname(this.path)
+  ).ext;
 }
+
+function contentEncoding(acceptEncoding) {
+  return contentEncoding_re.test(acceptEncoding) && RegExp.$1;
+}
+
+var contentEncoding_re = /\b(deflate|gzip)\b/;
+
 function createPathReplacer(find, place) {
   var re = RegExp(
     addPathSlashes(find), "g"
@@ -107,6 +118,7 @@ function defineGPF(self, property, bound) {
     )
   )[property];
 }
+
 // remove received, chunks, and i, after
 function endOfChunks() {
   this.callback = fsStat.bind(this.polpetta);
@@ -251,7 +263,7 @@ function fileStat(err, stats) {
       }
       tmp = findHome(this.path + SEP);
       if (1 < (tmp.length - this.path.length)) {
-        this.path = tmp;
+        defineNotConfigurableProperty(this, "path", tmp);
         ext = assignExt.call(this);
         if (ext == ".njs") {
           requireNJS.call(this);
@@ -275,6 +287,7 @@ function fileStat(err, stats) {
       break;
   }
 }
+
 // search for a valid page to serve
 // when the path is not specified
 function findHome(p) {
@@ -299,6 +312,7 @@ function findPort(args) {
           /^(\d+)$/.test(args[0])) &&
           RegExp.$1;
 }
+
 // when stuff is done, flush the output
 // this.output.push("What", "Ever");
 // this.output.flush(200, "html");
@@ -355,12 +369,14 @@ function flushResponse(
     encode || "utf-8"
   );
 }
+
 function fsStat() {
   fs.stat(
     this.path,
     fileStat.bind(this)
   );
 }
+
 function getCurrentPathName(polpetta) {
   var
     dirName = polpetta.url.pathname,
@@ -385,11 +401,13 @@ function getValue(key, def) {
     this[key] : def
   ;
 }
+
 var has = function (hasOwnProperty) {
   return function has(object, key) {
     return hasOwnProperty.call(object, key);
   };
 }({}.hasOwnProperty);
+
 // if you do something wrong ...
 // or you simply need help
 function help() {
@@ -414,6 +432,7 @@ function parseCookie(cookie) {
   var parts = cookie.split('=');
   this[unescape(parts[0])] = unescape(parts[1] || '');
 }
+
 // used to show a directory content
 function readDir(err, files) {
   if (err) {
@@ -511,6 +530,7 @@ function resolveArguments(args, keepProgramName) {
   keepProgramName || a.shift();
   return a;
 }
+
 // function used to perform very first connection
 function serverListen() {
   server.listen(port, HOST_NAME, serverListen.connect);
@@ -573,9 +593,22 @@ function streamFile(stats) {
     "onstreamfile",
     stats
   )) {
-    var stream = fs.createReadStream(this.path, emptyObjet);
+    var
+      stream = fs.createReadStream(this.path, emptyObjet),
+      acceptEncoding = contentEncoding(
+        this.request.headers['accept-encoding']
+      )
+    ;
     commonStream["Content-Type"] = polpetta_type(this.ext);
     commonStream["Content-Length"] = stats.size;
+    // TODO: avoid if already binary
+    if (acceptEncoding) {
+      //http://nodejs.org/api/zlib.html
+      commonStream["Content-Encoding"] = acceptEncoding;
+      stream = stream.pipe(acceptEncoding === "deflate" ?
+        zlib.createDeflate() : zlib.createGzip()
+      );
+    }
     this.response.writeHead(200, commonStream);
     stream.on("error", internalServerError.bind(this));
     stream.pipe(this.response);
@@ -590,15 +623,15 @@ function withKeysMethod(callback, obj) {
   );
 }
 function defineEachProperty(key) {
-  defineProperty(this, key, commonDescriptor);
+    defineProperty(this, key, commonDescriptor);
 }
-
 function defineGetter(get) {
   return {
     enumerable: true,
     get: get
   };
 }
+
 function defineKnownGetter(property, value) {
   return {
     enumerable: true,
@@ -611,10 +644,12 @@ function defineKnownGetter(property, value) {
     }
   };
 }
+
 function defineKnownProperty(self, key, value) {
   commonDescriptor.value = value;
   return defineProperty(self, key, commonDescriptor);
 }
+
 function defineNotConfigurableProperty(self, key, value) {
   commonDescriptor.writable = true;
   commonDescriptor.value = value;
@@ -622,6 +657,7 @@ function defineNotConfigurableProperty(self, key, value) {
   commonDescriptor.writable = false;
   return self;
 }
+
 function defineNotEnumerableProperty(self, key, value) {
   commonDescriptor.enumerable = false;
   commonDescriptor.value = value;
@@ -629,10 +665,12 @@ function defineNotEnumerableProperty(self, key, value) {
   commonDescriptor.enumerable = true;
   return self;
 }
+
 // reused function for all Not Founds
 var forbidden = generateErrorResponses(
   403
 );
+
 // returns common function to call
 // when shit happens
 function generateErrorResponses(code) {
@@ -657,10 +695,12 @@ function generateErrorResponses(code) {
 var internalServerError = generateErrorResponses(
   500
 );
+
 // reused function for all Not Founds
 var notFound = generateErrorResponses(
   404
 );
+
 function polpetta_code(code) {
   return  http.STATUS_CODES[code] ||
           "Internal Server Error";
@@ -681,6 +721,7 @@ function polpetta_encoding_define(ext) {
 }
 
 var polpetta_encoding_cache = {};
+
 function polpetta_header(type) {
   return {
     "Content-Type": getOrDefine(
@@ -702,6 +743,7 @@ function polpetta_header_define(type) {
 }
 
 var polpetta_header_cache = {};
+
 function polpetta_redirect(href, internally) {
   if (internally) {
     has(this, "url") ||
@@ -715,6 +757,7 @@ function polpetta_redirect(href, internally) {
     return false;
   }
 }
+
 // see polpetta_resolve
 function polpetta_resolve(src) {
   src = path.resolve(
@@ -723,6 +766,7 @@ function polpetta_resolve(src) {
 	// root must be at index 0
   return src.indexOf(root) ? "" : src;
 }
+
 function polpetta_root(args) {
   // nothing has been specified or ...
   return (
@@ -745,11 +789,12 @@ function polpetta_type(type, def) {
 // local variables
 var
   // version
-  version = "0.3.3",
+  version = "0.3.4",
 
   // dependencies
   fs = require("fs"),
   http = require("http"),
+  zlib = require("zlib"),
   querystring = require("querystring"),
   stream = require("stream"),
   url = require("url"),
@@ -1824,6 +1869,7 @@ if (fs.existsSync(
     htaccessPath
   );
 }
+
 function invokedHtaccess(
   code,
   method,
@@ -1846,6 +1892,7 @@ function invokedHtaccess(
   }
   return false;
 }
+
 function Polpetta(request, response) {
 
   var url = request.url;
@@ -1862,14 +1909,16 @@ function Polpetta(request, response) {
   )) {
     polpetta_redirect.call(this, url, true);
     pathname = this.url.pathname;
-    this.path = pathname == WEB_SEP ?
-      root :
-      polpetta_resolve(
-        decodeURIComponent(
-          pathname
+    defineNotConfigurableProperty(
+      this, "path",
+      pathname == WEB_SEP ?
+        root :
+        polpetta_resolve(
+          decodeURIComponent(
+            pathname
+          )
         )
-      )
-    ;
+    );
 
     if (HIDDEN_FILE.test(pathname)) {
       return forbidden.call(this, stats);
@@ -1887,6 +1936,7 @@ Polpetta.factory = function (request, response) {
 
 // exports it in case someone would like to use it
 freeze(this.Polpetta = Polpetta);
+
 Object.defineProperties(Polpetta.prototype, {
 
   // [polpetta commons]

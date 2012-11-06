@@ -2,11 +2,12 @@
 // local variables
 var
   // version
-  version = "0.3.3",
+  version = "0.3.4",
 
   // dependencies
   fs = require("fs"),
   http = require("http"),
+  zlib = require("zlib"),
   querystring = require("querystring"),
   stream = require("stream"),
   url = require("url"),

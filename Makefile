@@ -1,4 +1,4 @@
-.PHONY: clean types
+.PHONY: clean types test
 
 # list of files
 POLPETTA =  src/intro.js                      \
@@ -14,9 +14,6 @@ POLPETTA =  src/intro.js                      \
             src/Polpetta/prototype.js         \
             src/__init__.js
 
-CHEF =      src/chef.js                       \
-            src/function/resolveArguments.js  \
-            src/function/findPort.js          \
 
 # default build task
 build: $(POLPETTA)
@@ -24,9 +21,7 @@ build: $(POLPETTA)
 	cat $(POLPETTA) >build/polpetta
 	chmod +x build/polpetta
 	node utility/setversion.js
-	cat $(CHEF) >build/chef
-	chmod +x build/chef
-	node test/unit.njs
+	make test
 
 # clean/remove build folder
 clean:
@@ -38,5 +33,9 @@ types:
 	node utility/transform.js
 	rm types
 	make
+
+# clean/remove build folder
+test:
+	node test/unit.njs
 
 
