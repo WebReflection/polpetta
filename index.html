@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Polpetta by WebReflection</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Polpetta</h1>
+        <h2>Polpetta, any folder is served spiced</h2>
+        <a href="https://github.com/WebReflection/polpetta" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>(က) Polpetta</h1>
+
+<p>any folder is served spiced</p>
+
+<p><img src="http://www.3site.eu/images/polpetta_shell.png" alt="polpetta at work"></p>
+
+<hr><h2>What Is Polpetta</h2>
+
+<p><em>polpetta</em> is a script able to initialize a <a href="http://nodejs.org/">node.js</a> server in any folder you want and behave like <em>CGI</em> or, if you prefer <em>PHP</em>, too, in order to have <strong>not static files serving only but dynamic content as well</strong>.</p>
+
+<p><code>node polpetta ~/path</code> is basically all you need to start surfing the <code>~/path</code> folder as if it is a web-server with the plus that any <em>file.njs</em> inside that folder will act as <em>node.js</em> module.
+Here <a href="https://github.com/WebReflection/polpetta/blob/master/test/index.njs">the most basic example of an <em>index.njs</em> file</a>.</p>
+
+<p>In few words, <strong>polpetta is the easiest way for quick prototyping with both client files and node.js modules</strong>.</p>
+
+<h2>How Is Polpetta Different From Python SimpleHTTPServer, serverdir, etc</h2>
+
+<p>The JavaScript weekly description couldn't be more precise</p>
+
+<pre><code>Runs up a Node-powered HTTP server in any folder you want whereupon '.njs' files get executed CGI-style.
+</code></pre>
+
+<p>And this is almost it, except it finds automatically an available port if not specified, so you don't have to bother inventing numbers by your own, it allows interceptions on files via <em>.htaccess</em> like mechanism, and it <code>require("folder/file.njs")</code> to let you test modules for node.js in the possible easiest way ever, without writing from scratch again and again something able to run a web server.</p>
+
+<h2>Can I Use Polpetta In Production ?</h2>
+
+<p>You are using node.js which is not even at release 1.0 so I would say yes, you can :{D</p>
+
+<p>However, there are more mature projects such <a href="http://expressjs.com">Express</a> probably with some hosting possibility.
+You can still test Express node.js modules in <em>polpetta</em> with a "*zero effort kick-in*" process: type <em>polpetta</em> in that folder and you are basically done.</p>
+
+<p>Moreover, <em>polpetta</em> can be a solution for embedded devices able to run node.js thanks to all possible techniques used to minimize creation of pointless objects, recycle as much as possible in a single thread, and a simplified behavior able to cover most of web cases.
+Last, but not least, I am willing to rent a server and use <em>polpetta</em> there so .. stay tuned :-)</p>
+
+<h2>Does It Run This And That ?</h2>
+
+<p><em>polpetta</em> runs everything available with <strong>npm</strong> with a secured mechanism that disable browsers from reading any <strong>node_modules</strong> folder present in your project tree (together with hidden files prefixed via a simple <strong>.</strong> dot).
+If you have written a node.js module, <em>polpetta</em> will be more than happy to let you use it, or test it, in a simple, and familiar, <em>onload</em> exported callback.</p>
+
+<h2>Supported Platforms</h2>
+
+<p><em>polpetta</em> should just work wherever a recent version of node.js is available.
+Known platforms are <strong>Linux</strong>, <strong>Mac</strong>, and <strong>Windows</strong> where for latter one the <em>polpetta.cmd</em> file will simply start a polpetta server through double click.</p>
+
+<h2>Usage</h2>
+
+<p>Same as <a href="https://github.com/remy/servedir">serverdir</a></p>
+
+<pre><code>polpetta [path] [port]
+</code></pre>
+
+<ul>
+<li>
+<strong>path</strong>, the folder you want to use as web-server root, by default is where <em>polpetta</em> is</li>
+<li>
+<strong>port</strong>, the port you want to use, by default <em>polpetta</em> finds a free port automatically</li>
+</ul><p>Bear in mind if you specify a port and it's not available, <em>polpetta</em> will exit with a notice in console.</p>
+
+<p>If you don't remember later on ... <code>polpetta --help</code> or <code>polpetta -h</code> to have some hint.</p>
+
+<h2>OK, How Do I Start</h2>
+
+<p>Well, the very first step is to grab <em>polpetta</em>, either via <code>git clone git://github.com/WebReflection/polpetta.git</code> or simply getting the unique file.</p>
+
+<p>You can install <em>polpetta</em> through <code>npm install polpetta -g</code> or you can grab directly a freshly baked polpetta:</p>
+
+<pre><code># go in a directory, if emty is better
+# grab the built file from this repo
+curl -0 https://raw.github.com/WebReflection/polpetta/master/build/polpetta &gt;polpetta
+
+# if you don't want to make
+# polpetta executable
+# point to polpetta via node
+node ~/the/path/where/is/polpetta
+
+# if you want make it executable
+# be sure polpetta firstline points to the right
+# bin folder with node then chmod it
+chmod +x polpetta
+
+# if that is the case, test if it runs via
+# and exit via Ctrl+C or simply go to
+# the http://address:port/ showed and start playing
+./polpetta
+</code></pre>
+
+<p>You should see something like this in your console (I have used the /tmp folder here)</p>
+
+<p><img src="http://www.3site.eu/images/polpetta_shell.png" alt="polpetta at work"></p>
+
+<pre><code># if you want make your life easier and call
+# polpetta from anywhere, hoping you have not
+# configured node as super user ( this could hurt )
+which node
+# output: /usr/local/bin/node
+
+# move the file into that bin folder
+[sudo] mv polpetta /usr/local/bin
+
+# now, whatever folder you want ..
+polpetta ~/myhtml/only/website/
+
+# and you are ready to go
+</code></pre>
+
+<p>If you want clone this repository, help me improving <em>polpetta</em> or do some test/change, remember to <code>make</code> in order to build <em>polpetta</em> in the build folder then <code>node build/polpetta test</code> or any other path you like.</p>
+
+<h2>Make options</h2>
+
+<ul>
+<li>
+<strong>build</strong>, the default one, creates a freshly new backed <em>polpetta</em> in the <em>build/</em> folder</li>
+<li>
+<strong>clean</strong>, remove the build folder and everything included</li>
+<li>
+<strong>types</strong>, grab the Apache file, parse it, overwrite the <a href="https://github.com/WebReflection/polpetta/blob/master/src/EXTENSION_TO_MIME.js">EXTENSION_TO_MIME.js</a> file and build <em>polpetta</em> again</li>
+</ul><h2>What About .njs Files</h2>
+
+<p>If the file extension is <strong>.njs</strong> it is <strong>executed CGI (or PHP) style</strong> but with the whole power of node.js.
+You can <code>require("module")</code> and do what you want and you receive per each web-server call the <strong>request</strong> and the <strong>response</strong> object.
+All you have to do in your file is to export an <code>onload</code> function. This function will be called with a spiced up <em>polpetta</em> with some utility but you don't really have to use them, just do what you want.</p>
+
+<pre><code>// generic.njs file
+this.onload = function (
+  request,
+  response,
+  polpetta
+) {
+  var fs = require("fs");
+  fs.writeFileSync("gotcha.txt", "it works");
+  response.end();
+  // note that polpetta here points
+  // to a new polpetta instance
+  // per each request lifecycle
+};
+</code></pre>
+
+<h2>What About External npm Modules</h2>
+
+<p>There are two options here, the easy one and the even easier.
+The easy one is about putting your modules in a folder called <strong>node_modules</strong> inside your project.
+This folder is forbidden by default so nobody can read it through the url but you can <code>require(module)</code> without problems.</p>
+
+<p>The even easier way is to install your most used modules globally via <code>npm install module -g</code> so that these will be available in any case through the node.js <code>require()</code> mechanism and you update one place rather than all of them, if necessary.</p>
+
+<h2>What About Polpetta as Module</h2>
+
+<p>If you <code>require("./polpetta")</code> file you gonna have a module with a <em>Polpetta</em> constructor.
+Any time you want to initialize a Polpetta instance you can <code>new Polpetta(request, response)</code>.
+As easy way to use it for generic http server response, you can <code>http.createServer(Polpetta.factory);</code></p>
+
+<h2>What About .htaccess file</h2>
+
+<p>The <em>.htaccess</em> file is a feature that lets you intercept few calls such <em>onrequest</em>, <em>onstaticfile</em>, and <em>onerror</em>.
+You can find a
+<a href="https://github.com/WebReflection/polpetta/blob/master/test/weird%20folder/.htaccess">.htaccess example here</a>.
+The .htaccess file works only if present in the root folder you chose for a polpetta instance. In all other folders this will be threaten as an hidden file rather than being parsed per each folder request. This simplifies and boost up <strong>a lot</strong> the server logic and is most likely everything you need. Here a summary of all current methods invoked, if present, with the .htaccess file.</p>
+
+<ul>
+<li>
+<strong>onrequest</strong>, performed <em>while polpetta is still backing</em>, you can use this event to create your own redirects, internals or external, or do any sort of crazy things you might think about.</li>
+<li>
+<strong>onstaticfile</strong>, performed once a non CGI/.njs file is going to be served. Here you can serve gzipped content or a completely different layout, accordingly with the file type.</li>
+<li>
+<strong>onerror</strong>, performed when something bad occurs. Usually, for bad we mean a forbidden 403, a not found 404, or an internal server error, with code 500. Here you can serve an alternative nice page, informing the user something went wrong or so something else, if you think it's necessary.</li>
+</ul><p>Every time a callback is invoked, the <a href="https://github.com/WebReflection/polpetta/blob/master/src/htaccess/invokedHtaccess.js">event object</a> will be sent. If you want to stop a default polpetta behavior, simply use <code>even.preventDefault()</code> or <code>return false</code> at some point in the callback. This works like DOM Level 3 or DOM 0 events ... as easy as that.</p>
+
+<h2>Polpetta API</h2>
+
+<p>You can find almost everything documented in the <a href="https://github.com/WebReflection/polpetta/blob/master/src/Polpetta/prototype.js">prototype.js</a> file.
+Look closer and you will find a <code>polpetta.get(key[, default])</code> method, used to retrieve query string properties as it is for the PHP <code>$_GET[$key]</code> global, a <code>polpetta.post(key[, default])</code> method to retrieve posted data, a <code>polpetta.cookie(key[, default])</code> method, to get cookie, followed by <code>polpetta.cookie.set(key, value)</code> to set them.
+All these objects have a <code>obj.keys()</code> method too to retrieve all parsed keys for <em>get</em>, <em>post</em>, <em>cookie</em>, or <em>file</em>.</p>
+
+<p>You can see an examples for <a href="https://github.com/WebReflection/polpetta/blob/master/test/cookie.njs">cookie</a>, <a href="https://github.com/WebReflection/polpetta/blob/master/test/post.njs">get or post</a>, and <a href="https://github.com/WebReflection/polpetta/blob/master/test/file.njs">files upload</a> in the test folder.</p>
+
+<p>Last, but not least, there is a <code>polpetta.output</code> <strong>Array</strong> property where you can push your content and <code>polpetta.output.flush([type || [code, type]])</code> once you have done.
+Bear in mind this is not a good technique to serve big files on the fly but that's not the purpose of the <code>output</code> property.</p>
+
+<pre><code>// example of get and output
+this.onload = function (req, res, p) {
+  p.output.push(
+    "Hello ",
+      p.get("name",
+        // default if not present
+        "unknown"
+      ),
+    "!"
+  );
+  p.output.flush("txt");
+};
+
+// produced output for localhost:port
+Hello unknown!
+
+// produced output for localhost:port/?name=Polpetta
+Hello Polpetta!
+</code></pre>
+
+<h2>License</h2>
+
+<p>This <em>polpetta</em> project is under the Mit Style License</p>
+
+<pre><code>Copyright (C) 2011 by Andrea Giammarchi, @WebReflection
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+</code></pre>
+
+<h2>TODOs</h2>
+
+<ul>
+<li>pipe/stream files bigger than a predefined amount of MB (or just pipe them all)</li>
+<li>reach more coverage through <a href="https://github.com/WebReflection/wru">wru</a> tests (integrated in the build system)</li>
+<li>add default favicon with polpetta logo (or maybe not ....)</li>
+<li>... something else you can suggest me :-)</li>
+</ul><h2>Logo</h2>
+
+<p>Polpetta means meatball and I am not a graphic designer at all ... so this is all I could do but if you want to create a better logo, you'll be credited and I'll pay you a beer, cheers :D</p>
+
+<p><img src="https://github.com/WebReflection/polpetta/raw/master/test/img/polpetta.png" alt="logo"></p>
+
+<h2>Oh Gosh ... Why</h2>
+
+<p>I am maintaining different projects and I am sick of setting up a web-server per each project.
+You might have noticed that most <strong>recent browsers do not let us test through the <em>file://</em> protocol anymore</strong> and this is the most annoying thing ever for a developer, imho.
+You might be a <em>node.js</em> modules developer too and sometimes an easy way to test your modules is all you need.
+With <em>polpetta</em> you can create as many server as you want per each folder and test them without setting up a damn thing.
+Accordingly, if you develop anything for the web or the <em>node.js</em> community, <em>polpetta</em> could be exactly the solution to all your problems.</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/WebReflection/polpetta/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/WebReflection/polpetta/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/WebReflection/polpetta"></a> is maintained by <a href="https://github.com/WebReflection">WebReflection</a>.</p>
+
+          <p>This page was generated by <a href="pages.github.com">GitHub Pages</a> using the Architect theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
