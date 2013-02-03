@@ -10,8 +10,9 @@ const
                                   // N as amount of bytes
 
 
-  HOST_NAME = process.env.IP || "localhost",
-                                  // default host name
+  HOST_NAME = process.env.IP || "",
+                                  // default host name, force it if needed
+                                  // otherwise it will be resolved automatically
 
   HOST_INITIAL_PORT = process.env.PORT || 1337,
                                   // choose a port to start with

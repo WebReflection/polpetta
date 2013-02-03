@@ -11,6 +11,8 @@ function help() {
     "node polpetta ~/     server runs in specific ~/ folder",
     "./polpetta           same as above.. you need a folder!",
     "./polpetta ./ 8080   runs in polpetta dir with 8080 port",
+    "node polpetta [path] [hostname:port]",
+    "./polpetta 0.0.0.0:8080   runs using 0.0.0.0 as host address",
     "-------------------------------------------------------",
     "The output will describe the folder",
     "and the full URL to use with your browser",

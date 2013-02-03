@@ -1,7 +1,7 @@
 
 // function used to perform very first connection
 function serverListen() {
-  server.listen(port, HOST_NAME, serverListen.connect);
+  server.listen(port, HOST_USED, serverListen.connect);
 }
 
 serverListen.connected = false;

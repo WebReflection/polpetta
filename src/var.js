@@ -62,6 +62,7 @@ var
   port =  HOST_USER_PORT ||
           HOST_INITIAL_PORT,
   root = polpetta_root(arguments),
+  HOST_USED = HOST_NAME || findHost(arguments) || "localhost",
 
   // RegExp constants
   BOUNDARY_MATCH = /boundary=([^;]+)/,

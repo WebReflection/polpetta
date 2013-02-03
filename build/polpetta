@@ -24,8 +24,9 @@ const
                                   // N as amount of bytes
 
 
-  HOST_NAME = process.env.IP || "localhost",
-                                  // default host name
+  HOST_NAME = process.env.IP || "",
+                                  // default host name, force it if needed
+                                  // otherwise it will be resolved automatically
 
   HOST_INITIAL_PORT = process.env.PORT || 1337,
                                   // choose a port to start with
@@ -307,12 +308,25 @@ findHome.filter = function (main) {
   );
 };
 
-function findPort(args) {
-  return (/^(\d+)$/.test(args[1]) ||
-          /^(\d+)$/.test(args[0])) &&
+function findHost(args) {
+  var
+    reHost = /^(.+?)\:(\d+)$/
+  ;
+  return (reHost.test(args[1]) ||
+          reHost.test(args[0])) &&
           RegExp.$1;
 }
-
+function findPort(args) {
+  var
+    reNum = /^(\d+)$/,
+    rePort = /^.+?\:(\d+)$/
+  ;
+  return (reNum.test(args[1]) ||
+          rePort.test(args[1]) ||
+          reNum.test(args[0]) ||
+          rePort.test(args[0])) &&
+          RegExp.$1;
+}
 // when stuff is done, flush the output
 // this.output.push("What", "Ever");
 // this.output.flush(200, "html");
@@ -420,6 +434,8 @@ function help() {
     "node polpetta ~/     server runs in specific ~/ folder",
     "./polpetta           same as above.. you need a folder!",
     "./polpetta ./ 8080   runs in polpetta dir with 8080 port",
+    "node polpetta [path] [hostname:port]",
+    "./polpetta 0.0.0.0:8080   runs using 0.0.0.0 as host address",
     "-------------------------------------------------------",
     "The output will describe the folder",
     "and the full URL to use with your browser",
@@ -533,7 +549,7 @@ function resolveArguments(args, keepProgramName) {
 
 // function used to perform very first connection
 function serverListen() {
-  server.listen(port, HOST_NAME, serverListen.connect);
+  server.listen(port, HOST_USED, serverListen.connect);
 }
 
 serverListen.connected = false;
@@ -849,6 +865,7 @@ var
   port =  HOST_USER_PORT ||
           HOST_INITIAL_PORT,
   root = polpetta_root(arguments),
+  HOST_USED = HOST_NAME || findHost(arguments) || "localhost",
 
   // RegExp constants
   BOUNDARY_MATCH = /boundary=([^;]+)/,

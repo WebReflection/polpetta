@@ -1,6 +1,12 @@
 
 function findPort(args) {
-  return (/^(\d+)$/.test(args[1]) ||
-          /^(\d+)$/.test(args[0])) &&
+  var
+    reNum = /^(\d+)$/,
+    rePort = /^.+?\:(\d+)$/
+  ;
+  return (reNum.test(args[1]) ||
+          rePort.test(args[1]) ||
+          reNum.test(args[0]) ||
+          rePort.test(args[0])) &&
           RegExp.$1;
 }
