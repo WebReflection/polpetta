@@ -26,6 +26,12 @@ function Polpetta(request, response) {
         )
     );
 
+    /* check url and resulting path
+    console.log(url);
+    console.log(pathname);
+    console.log(this.path);
+    //*/
+
     if (HIDDEN_FILE.test(pathname)) {
       return forbidden.call(this, stats);
     }

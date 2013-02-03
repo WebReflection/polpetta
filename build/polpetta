@@ -433,6 +433,28 @@ function parseCookie(cookie) {
   this[unescape(parts[0])] = unescape(parts[1] || '');
 }
 
+// once the file has been read ...
+function readFile(
+  err,
+  data
+) {
+  if (err) {
+    internalServerError.call(this, err);
+  } else if (!invokedHtaccess.call(
+    this,
+    200,
+    "onstaticfile",
+    data
+  )) {
+    this.response.writeHead(
+      200, this.header(this.ext)
+    );
+    this.response.end(
+      data, polpetta_encoding(this.ext)
+    );
+  }
+}
+
 // used to show a directory content
 function readDir(err, files) {
   if (err) {
@@ -480,28 +502,6 @@ readDir.forEach = function (name) {
     );
   }
 };
-
-// once the file has been read ...
-function readFile(
-  err,
-  data
-) {
-  if (err) {
-    internalServerError.call(this, err);
-  } else if (!invokedHtaccess.call(
-    this,
-    200,
-    "onstaticfile",
-    data
-  )) {
-    this.response.writeHead(
-      200, this.header(this.ext)
-    );
-    this.response.end(
-      data, polpetta_encoding(this.ext)
-    );
-  }
-}
 
 // used to require .njs files
 function requireNJS() {
@@ -761,9 +761,9 @@ function polpetta_redirect(href, internally) {
 // see polpetta_resolve
 function polpetta_resolve(src) {
   src = path.resolve(
-		root + systemPath(src)
-	);
-	// root must be at index 0
+    root + systemPath(src)
+  );
+  // root must be at index 0
   return src.indexOf(root) ? "" : src;
 }
 
@@ -1919,6 +1919,12 @@ function Polpetta(request, response) {
           )
         )
     );
+
+    /* check url and resulting path
+    console.log(url);
+    console.log(pathname);
+    console.log(this.path);
+    //*/
 
     if (HIDDEN_FILE.test(pathname)) {
       return forbidden.call(this, stats);
