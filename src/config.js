@@ -19,7 +19,11 @@ const
                                   // this is for automatic port recognition
                                   // if argument [port] is not provided
 
-  HTACCESS_NAME = ".htaccess"     // experimental .htaccess name
+  HTACCESS_NAME = ".htaccess",    // experimental .htaccess name
+
+  FORCE_NJS_RELOAD = false        // requires each time modules
+                                  // easier to develop with
+                                  // set true if you want
 ;
 
 // after this point, if you don't know what you are doing .. please DON'T !!!
