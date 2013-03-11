@@ -15,7 +15,7 @@ this.onload = function (
   // push the output, and flush the content
   polpetta.output.push(
     '<!doctype html>',
-    '<html>',
+    '<html id="', uid, '">',
       '<head>',
         '<title>Hello Polpetta!</title>',
         '<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">',
@@ -39,3 +39,4 @@ this.onload = function (
   // injected as context for the whole
   // response logic
 };
+var uid = 'id-' + Math.random();

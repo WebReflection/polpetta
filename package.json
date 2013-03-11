@@ -1,5 +1,5 @@
 {
-  "version": "0.3.6",
+  "version": "0.3.7",
   "name": "polpetta",
   "description": "Creates a web server in any folder and with runtime node.js modules capability plus get, post data and more",
   "homepage": "https://github.com/WebReflection/polpetta",
@@ -12,6 +12,9 @@
   "repository": {
     "type": "git",
     "url": "git://github.com/WebReflection/polpetta.git"
+  },
+  "dependencies": {
+    "require-updated": ">= 0.0.0"
   },
   "bin": {
     "polpetta": "./build/polpetta"

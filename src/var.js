@@ -2,9 +2,13 @@
 // local variables
 var
   // version
-  version = "0.3.4",
+  version = "0.3.7",
 
   // dependencies
+  ru = FORCE_NJS_RELOAD ?
+    require('require-updated') :
+    require
+  ,
   fs = require("fs"),
   http = require("http"),
   zlib = require("zlib"),
