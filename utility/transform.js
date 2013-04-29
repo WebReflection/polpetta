@@ -38,3 +38,15 @@ fs.writeFileSync(
   ");\n",
   "utf-8"
 );
+fs.writeFileSync(
+  "lib/mime-type.js",
+  "module.exports=" +
+    JSON.stringify(EXTENSION_TO_MIME)
+      .replace(/",(\w)/g, '"$1')
+      .replace(/,/g, ",\n")
+      .replace(/\{/, '{\n')
+      .replace(/\}$/, '\n}')
+      .replace(/^"/gm, '  "') +
+  ";",
+  "utf-8"
+);
