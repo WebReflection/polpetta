@@ -1,0 +1,31 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/local/bin/node',
+1 verbose cli   '/usr/local/bin/npm',
+1 verbose cli   'info',
+1 verbose cli   'function-calling' ]
+2 info using npm@1.2.18
+3 info using node@v0.11.1-pre
+4 verbose url raw function-calling
+5 verbose url resolving [ 'https://registry.npmjs.org/', './function-calling' ]
+6 verbose url resolved https://registry.npmjs.org/function-calling
+7 info trying registry request attempt 1 at 21:25:13
+8 http GET https://registry.npmjs.org/function-calling
+9 http 404 https://registry.npmjs.org/function-calling
+10 silly registry.get cb [ 404,
+10 silly registry.get   { server: 'CouchDB/1.3.0 (Erlang OTP/R15B03)',
+10 silly registry.get     date: 'Wed, 01 May 2013 04:24:53 GMT',
+10 silly registry.get     'content-type': 'application/json',
+10 silly registry.get     'content-length': '52',
+10 silly registry.get     'cache-control': 'must-revalidate' } ]
+11 error 404 'function-calling' is not in the npm registry.
+11 error 404 You should bug the author to publish it
+11 error 404
+11 error 404 Note that you can also install from a
+11 error 404 tarball, folder, or http url, or git url.
+12 error System Darwin 12.3.0
+13 error command "/usr/local/bin/node" "/usr/local/bin/npm" "info" "function-calling"
+14 error cwd /Users/agiammarchi/code/polpetta
+15 error node -v v0.11.1-pre
+16 error npm -v 1.2.18
+17 error code E404
+18 verbose exit [ 1, true ]

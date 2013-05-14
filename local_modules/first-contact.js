@@ -1,9 +1,8 @@
 var
+  http = require('http'),
   constitution = require('./constitution.js'),
   guardian = require('./guardian.js'),
-  http = require('http'),
-  port = constitution.PORT,
-  waitingForConnection = true;
+  port = constitution.PORT;
 
 function genericError(next, error) {
   if (!constitution.PORT_FROM_PEOPLE.length) {
@@ -18,31 +17,23 @@ function genericError(next, error) {
     ].join("\n"));
     if (error) error();
   } else {
-    if (++port < 10000) {
-      next();
-    } else if(error) {
-      error();
-    } 
+    (9999 < ++port ? error || Object : next)();
   }
 }
 
 this.connect = function connect(onconnect, onerror) {
   function connect() {
-    var address;
-    if (waitingForConnection) {
-      waitingForConnection = false;
-      address = server.address();
-      console.log([
-        'http:', '', address.address + ":" + address.port, ''
-      ].join(guardian.sep));
-      console.log([
-        "#",
-        "(^.^)",
-        "polpetta",
-        '[#' + constitution.CPU + ']',
-        guardian.root
-      ].join(" "));
-    }
+    var address = server.address();
+    console.log([
+      'http:', '', address.address + ":" + address.port, ''
+    ].join(guardian.sep));
+    console.log([
+      "#",
+      "(^.^)",
+      "polpetta",
+      '[#' + constitution.CPU + ']',
+      guardian.root
+    ].join(" "));
     server.on('close', function close() {
       server.removeListener('close', close);
       onconnect(address.address, address.port);
