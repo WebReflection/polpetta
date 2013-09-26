@@ -11,6 +11,7 @@ var
   ,
   fs = require("fs"),
   http = require("http"),
+  https = require('https'),
   zlib = require("zlib"),
   querystring = require("querystring"),
   stream = require("stream"),
@@ -55,7 +56,8 @@ var
     false
   ),
   arguments = resolveArguments(process.argv),
-
+  SSL = !!(~arguments.indexOf('--https') && arguments.splice(arguments.indexOf('--https'), 1)),
+  CORS = !!(~arguments.indexOf('--cors') && arguments.splice(arguments.indexOf('--cors'), 1)),
   // internal constants
   CWD = process.cwd(),
   HOST_USER_PORT = findPort(arguments),
