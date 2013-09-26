@@ -56,8 +56,8 @@ var
     false
   ),
   arguments = resolveArguments(process.argv),
-  SSL = ~arguments.indexOf('--https'),
-  CORS = ~arguments.indexOf('--cors'),
+  SSL = !!(~arguments.indexOf('--https') && arguments.splice(arguments.indexOf('--https'), 1)),
+  CORS = !!(~arguments.indexOf('--cors') && arguments.splice(arguments.indexOf('--cors'), 1)),
   // internal constants
   CWD = process.cwd(),
   HOST_USER_PORT = findPort(arguments),
@@ -96,13 +96,4 @@ if (SEP == WEB_SEP) {
 } else {
   systemPath = createPathReplacer(WEB_SEP, SEP);
   webPath = createPathReplacer(SEP, WEB_SEP);
-}
-
-if(SSL){
-    arguments.splice(arguments.indexOf('--https'), 1)
-    root = polpetta_root(arguments)
-}
-if(CORS){
-    arguments.splice(arguments.indexOf('--cors'), 1)
-    root = polpetta_root(arguments)
 }

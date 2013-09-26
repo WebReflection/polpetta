@@ -344,7 +344,6 @@ function flushResponse(
     output = this.output,
     length = output.length
   ;
-
   // output.flush("html");
   // output.flush(".html");
   // output.flush("text/html");
@@ -361,14 +360,12 @@ function flushResponse(
     code = length ? 200 : 404;
   }
   if (typeof type == "string") {
-
     response.writeHead(
       code,
       polpetta_header(
         type || "text/html"
       )
     );
-
   } else {
     type || (type = polpetta_header(
       "text/html"
@@ -875,8 +872,8 @@ var
     false
   ),
   arguments = resolveArguments(process.argv),
-  SSL = ~arguments.indexOf('--https'),
-  CORS = ~arguments.indexOf('--cors'),
+  SSL = !!(~arguments.indexOf('--https') && arguments.splice(arguments.indexOf('--https'), 1)),
+  CORS = !!(~arguments.indexOf('--cors') && arguments.splice(arguments.indexOf('--cors'), 1)),
   // internal constants
   CWD = process.cwd(),
   HOST_USER_PORT = findPort(arguments),
@@ -917,14 +914,6 @@ if (SEP == WEB_SEP) {
   webPath = createPathReplacer(SEP, WEB_SEP);
 }
 
-if(SSL){
-    arguments.splice(arguments.indexOf('--https'), 1)
-    root = polpetta_root(arguments)
-}
-if(CORS){
-    arguments.splice(arguments.indexOf('--cors'), 1)
-    root = polpetta_root(arguments)
-}
 const EXTENSION_TO_MIME = freeze({
   ".ez":"application/andrew-inset",
   ".aw":"application/applixware",
@@ -2270,13 +2259,10 @@ if (!module.parent) {
                   ca : Polpetta.prototype.ca,
                   key: Polpetta.prototype.key
               }, Polpetta.factory);
-              serverListen(server.on("error", serverListen.error));
           }else{
               server = http.createServer(Polpetta.factory);
-              serverListen(server.on("error", serverListen.error));
           }
-
-
+		  serverListen(server.on("error", serverListen.error));
       }
     });
 

@@ -25,13 +25,10 @@ if (!module.parent) {
                   ca : Polpetta.prototype.ca,
                   key: Polpetta.prototype.key
               }, Polpetta.factory);
-              serverListen(server.on("error", serverListen.error));
           }else{
               server = http.createServer(Polpetta.factory);
-              serverListen(server.on("error", serverListen.error));
           }
-
-
+		  serverListen(server.on("error", serverListen.error));
       }
     });
 
