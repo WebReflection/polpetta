@@ -19,8 +19,19 @@ if (!module.parent) {
           "======================================================="
         ].join("\n"));
       } else {
-        server = http.createServer(Polpetta.factory);
-        serverListen(server.on("error", serverListen.error));
+          if(SSL){
+              server = https.createServer({
+                  cert : Polpetta.prototype.cert,
+                  ca : Polpetta.prototype.ca,
+                  key: Polpetta.prototype.key
+              }, Polpetta.factory);
+              serverListen(server.on("error", serverListen.error));
+          }else{
+              server = http.createServer(Polpetta.factory);
+              serverListen(server.on("error", serverListen.error));
+          }
+
+
       }
     });
 
