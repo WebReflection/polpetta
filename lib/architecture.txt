@@ -1,0 +1,30 @@
+[core]
+everything needed to operate
+
+# http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
+
+[OPTIONS]
+status 200 if file/path exists (after optional resolution through .htaccess)
+Content-Length: 0
+no body
+
+[HEAD]
+same as GET without body
+
+[GET]
+If-Modified-Since, If-Unmodified-Since, If-Match, If-None-Match, or If-Range
+
+[POST]
+data
+
+[PUT]
+should create, only if users are authenticated
+
+[DELETE]
+same as PUT
+
+[TRACE]
+no idea what is this about
+
+[CONNECT]
+for SSL tunnels or similar stuff
