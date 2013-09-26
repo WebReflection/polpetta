@@ -9,6 +9,9 @@
     "name": "Andrea Giammarchi",
     "web": "http://webreflection.blogspot.com/"
   },
+  "contributors": [
+      "Cristian Carlesso <@kentaromiura> (http://github.com/kentaromiura)"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/WebReflection/polpetta.git"

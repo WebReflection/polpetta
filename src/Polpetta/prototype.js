@@ -2,7 +2,6 @@
 Object.defineProperties(Polpetta.prototype, {
 
   // [polpetta commons]
-
   /**
    * Returns a code description
    * assuming you know that 200 is 200
@@ -188,6 +187,64 @@ commonDescriptor.value = "";
 // [shared version]
 commonDescriptor.value = version;
 defineProperty(Polpetta.prototype, "version", commonDescriptor);
+
+//SSH DUMMY KEYS -- in prototype since it will be freezed.
+/*
+ * Server certificate:
+ * 	 subject: C=IT; ST=GrumpyLandia; L=GrumpyCity; O=Grumpy Cat LTD; CN=Grumpy; emailAddress=cat.g@gmail.com
+ * 	 start date: 2013-09-26 09:55:26 GMT
+ * 	 expire date: 2038-05-18 09:55:26 GMT
+ * 	 common name: Grumpy (does not match 'localhost')
+ * 	 issuer: C=IT; ST=GrumpyLandia; L=GrumpyCity; O=Grumpy Cat LTD; CN=Grumpy; emailAddress=cat.g@gmail.com
+ * 	 SSL certificate verify result: self signed certificate (18), continuing anyway.
+*/
+//TODO allows ovveriding this, require a bit of documentation though.
+    Polpetta.prototype.key = ['-----BEGIN RSA PRIVATE KEY-----',
+        'MIICXQIBAAKBgQDLrcjMw8Gcg+jlit75Arz+HnMs/lG4hP5nSBL2H449i+KsQHJz',
+        '6EA+uyAqTSwyfhqRMkdLUkYoXAQP4SklMCkaxaBBrd6dem8tT1ckIaA0PfdJYfDC',
+        'uKczHG2klnq2/NAw/O33AK58dbtxfSRzFJPMs3gBtt6/UWti4Ilb1aQe9wIDAQAB',
+        'AoGBAMoU13iJ9MuUePtd6FJJbDf5AC8w+OXJVhwk/2Mg9eCMrM5YdvYXBb73rDcs',
+        'MGC8iyFqMCBENgWPHhyfOlKCURRQxb2u+xWBssbM940NAl0Gie9WzPxw041QmwDQ',
+        '0Qqy1aC/Okcz0lbTDbidbnc6fvTV1aC65Pr2+98vgw7cVWlxAkEA5csSTCGCF3vS',
+        'nRsVV88MJCZLP2/GgP7CSeMDmLHwTCVr2JmDVa+R/1Dom+kXG3Cr9Q0xCy1RzO4G',
+        'OddAOotG+QJBAOLoSjXHPzf48md/8c8vgB9NBc0hlMuY54xMjSxACCb4g1miPh+Z',
+        'CKeGZgxHirndJi6GAJYwoI3MLWuqkyM8YW8CQQCU4MhuApeiV1rQ5qchSMd49EZ0',
+        'Rxq4oFWIQUgnOcGR0/zXTD5G2YUhgW3y9UU/RfRiw7UupKIGv3/RIaA/TdUhAkBz',
+        '2Q0qb9PDDAMW/KfElAfh8z0nAiIp4KM3ak4ZbYe7/d1yAfedwlA81816L3yQcGxy',
+        'DFB4XdNbEgeOlMQSlV1ZAkB6NnAfNJDkwwpN2sM3QM4OtvWsWHYO2bFbRGqoOryq',
+        'UEACAx5/UdL4MPhUf5oyDOauu/UpV/BqObFLnvunj05O',
+        '-----END RSA PRIVATE KEY-----'].join('\n')
+
+    Polpetta.prototype.ca = [['-----BEGIN CERTIFICATE REQUEST-----',
+        'MIIBxDCCAS0CAQAwgYMxCzAJBgNVBAYTAklUMRUwEwYDVQQIEwxHcnVtcHlMYW5k',
+        'aWExEzARBgNVBAcTCkdydW1weUNpdHkxFzAVBgNVBAoTDkdydW1weSBDYXQgTFRE',
+        'MQ8wDQYDVQQDEwZHcnVtcHkxHjAcBgkqhkiG9w0BCQEWD2NhdC5nQGdtYWlsLmNv',
+        'bTCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEAy63IzMPBnIPo5Yre+QK8/h5z',
+        'LP5RuIT+Z0gS9h+OPYvirEByc+hAPrsgKk0sMn4akTJHS1JGKFwED+EpJTApGsWg',
+        'Qa3enXpvLU9XJCGgND33SWHwwrinMxxtpJZ6tvzQMPzt9wCufHW7cX0kcxSTzLN4',
+        'Abbev1FrYuCJW9WkHvcCAwEAAaAAMA0GCSqGSIb3DQEBBQUAA4GBAJJv/mdIboZH',
+        'fZIEz0pw2vmKhpceoiXhz7HTllFZ/om/msAPRA5V0kyXEZJ32YIUBv2MR6cHtoHQ',
+        'vag7cw+GifXSgyT8loDG2dAjvWtiFXXGKN6YnkJW6iXOHDVo5ETdaJCI3pUhHVSB',
+        'GGtjL91MJhEmB6q7SDNfaBroQ9UYAu4C',
+        '-----END CERTIFICATE REQUEST-----'].join('\n')];
+
+    Polpetta.prototype.cert = ['-----BEGIN CERTIFICATE-----',
+        'MIICfzCCAegCCQD9vawlAR85XjANBgkqhkiG9w0BAQUFADCBgzELMAkGA1UEBhMC',
+        'SVQxFTATBgNVBAgTDEdydW1weUxhbmRpYTETMBEGA1UEBxMKR3J1bXB5Q2l0eTEX',
+        'MBUGA1UEChMOR3J1bXB5IENhdCBMVEQxDzANBgNVBAMTBkdydW1weTEeMBwGCSqG',
+        'SIb3DQEJARYPY2F0LmdAZ21haWwuY29tMB4XDTEzMDkyNjA5NTUyNloXDTM4MDUx',
+        'ODA5NTUyNlowgYMxCzAJBgNVBAYTAklUMRUwEwYDVQQIEwxHcnVtcHlMYW5kaWEx',
+        'EzARBgNVBAcTCkdydW1weUNpdHkxFzAVBgNVBAoTDkdydW1weSBDYXQgTFREMQ8w',
+        'DQYDVQQDEwZHcnVtcHkxHjAcBgkqhkiG9w0BCQEWD2NhdC5nQGdtYWlsLmNvbTCB',
+        'nzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEAy63IzMPBnIPo5Yre+QK8/h5zLP5R',
+        'uIT+Z0gS9h+OPYvirEByc+hAPrsgKk0sMn4akTJHS1JGKFwED+EpJTApGsWgQa3e',
+        'nXpvLU9XJCGgND33SWHwwrinMxxtpJZ6tvzQMPzt9wCufHW7cX0kcxSTzLN4Abbe',
+        'v1FrYuCJW9WkHvcCAwEAATANBgkqhkiG9w0BAQUFAAOBgQA9c1UF2lbYGlNFruMO',
+        'd47scNsZBkSSnRRMSloNhO2KIOhRA57WjFk9b0XmCe1gQuNlEWVHf+HZv/Xet8+9',
+        'LRhImq4KAG5R+z3TjBrtI/yrVWEzNk+mnygRvsX6MoDKNDbzE6y87tviBUxNgAWB',
+        'r/pX8MbqC5NpbLys0A1cpm9tRw==',
+        '-----END CERTIFICATE-----'].join('\n');
+
 
 
 // wanna trust polpetta instances ?
