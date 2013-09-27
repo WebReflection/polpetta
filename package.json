@@ -1,5 +1,5 @@
 {
-  "version": "0.3.8",
+  "version": "0.3.9",
   "name": "polpetta",
   "description": "Creates a web server in any folder and with runtime node.js modules capability plus get, post data and more",
   "homepage": "https://github.com/WebReflection/polpetta",
