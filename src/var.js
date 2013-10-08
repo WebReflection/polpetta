@@ -56,8 +56,8 @@ var
     false
   ),
   arguments = resolveArguments(process.argv),
-  SSL = !!(~arguments.indexOf('--https') && arguments.splice(arguments.indexOf('--https'), 1)),
-  CORS = !!(~arguments.indexOf('--cors') && arguments.splice(arguments.indexOf('--cors'), 1)),
+  SSL = !!(~(SSL=arguments.indexOf('--https')) && arguments.splice(SSL, 1)),
+  CORS = !!(~(CORS=arguments.indexOf('--cors')) && arguments.splice(CORS, 1)),
   // internal constants
   CWD = process.cwd(),
   HOST_USER_PORT = findPort(arguments),
