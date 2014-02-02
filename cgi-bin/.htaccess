@@ -8,10 +8,10 @@ this.onstaticfile = function (event) {
     ext = event.ext.toLowerCase(),
     fs = require('fs'),
     path = require('path'),
-    stat = fs.statSync(event.file); 
+    stat = fs.statSync(event.file),
+    executable = 1 & parseInt(stat.mode & 511).toString(8).charAt(0);
 
-
-  if(parseInt(stat.mode.toString(8)[0], 10) & 1){
+  if(executable){
     var exec = cgi(event.file, {cwd : path.dirname(event.file)})
     exec(req, res)
     event.preventDefault()
