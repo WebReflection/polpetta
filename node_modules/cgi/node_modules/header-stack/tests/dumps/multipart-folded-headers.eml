@@ -1,0 +1,27 @@
+Received: from cm-omr2 (mail.networksolutionsemail.com [205.178.146.50])
+	by omr2.networksolutionsemail.com (8.13.6/8.13.6) with ESMTP id p2MHKqUI024119
+	for <ilon@viewdar.com>; Tue, 22 Mar 2011 13:20:52 -0400
+Authentication-Results:  cm-omr2 smtp.user=ilon@enako.com; auth=pass (CRAM-MD5)
+X-Authenticated-UID: ilon@enako.com
+Received: from [75.220.224.105] ([75.220.224.105:3777] helo=SmartServer)
+	by cm-omr2 (envelope-from <ilon@enako.com>)
+	(ecelerity 2.2.2.41 r(31179/31189)) with ESMTPA
+	id D8/B4-21287-27AD88D4; Tue, 22 Mar 2011 13:20:52 -0400
+Date: Tue, 22 Mar 2011 13:20:50 -0400
+Message-ID: <D8.B4.21287.27AD88D4@cm-omr2>
+From: "mail" <ilon@enako.com>
+To: <ilon@viewdar.com>
+Subject: SLC: HeartBeat
+X-Mailer: i.LON Mailer V4.3
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary=ILON100
+
+If you can read this, check your email client!
+
+--ILON100
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+
+~~DCC:SLC~~DAT:2011-03-22~~TIM:11:21:01~~ALM:HEARTBEAT~~
+
+--ILON100--
