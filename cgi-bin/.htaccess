@@ -1,0 +1,25 @@
+var cgi = require('cgi')
+this.onstaticfile = function (event) {
+
+  var
+    p = event.polpetta,
+    req = event.request,
+    res = event.response,
+    ext = event.ext.toLowerCase(),
+    fs = require('fs'),
+    path = require('path'),
+    stat = fs.statSync(event.file),
+    executable = 1 & parseInt(stat.mode & 511).toString(8).charAt(0);
+
+  if(executable){
+    var exec = cgi(event.file, {cwd : path.dirname(event.file)})
+    exec(req, res)
+    event.preventDefault()
+  }
+
+}
+
+/// for debug purpose
+function log(e) {
+  console.log(e);
+}

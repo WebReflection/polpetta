@@ -169,6 +169,12 @@ The .htaccess file works only if present in the root folder you chose for a polp
 
 Every time a callback is invoked, the [event object](https://github.com/WebReflection/polpetta/blob/master/src/htaccess/invokedHtaccess.js) will be sent. If you want to stop a default polpetta behavior, simply use `even.preventDefault()` or `return false` at some point in the callback. This works like DOM Level 3 or DOM 0 events ... as easy as that.
 
+Special cgi-bin .htaccess file
+------------------------------
+In the *cgi-bin* directory is included a special *.htaccess* file which makes polpetta cgi compliant.
+If this htaccess is used any executable file will be executed as a cgi script.
+The script will checks if the file has the executable flag for the owner of the file, which should be the most probably scenario and also the safest solution (chmod 500).
+
 
 Polpetta API
 ------------

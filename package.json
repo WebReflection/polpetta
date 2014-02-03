@@ -19,6 +19,9 @@
   "dependencies": {
     "require-updated": ">= 0.0.0"
   },
+  "optionalDependencies":{
+    "cgi":"git://github.com/kentaromiura/node-cgi.git#v0.2.1"
+  },
   "bin": {
     "polpetta": "./build/polpetta"
   }
